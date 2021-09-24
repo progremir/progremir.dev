@@ -1,74 +1,51 @@
 import Head from 'next/head';
-import Image from 'next/image';
-
-import styles from '@/styles/Home.module.css';
 
 export default function Home() {
   return (
-    <div className={styles.container}>
+    <div className="bg-gray-900">
       <Head>
-        <title>TypeScript starter for Next.js</title>
-        <meta
-          name="description"
-          content="TypeScript starter for Next.js that includes all you need to build amazing apps"
-        />
-        <link rel="icon" href="/favicon.ico" />
+        <title>Emir Amanbekov - Fullstack Engineer</title>
+        <meta name="description" content="Hey, I'm Emir!" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <main className="">
+        <h1>Hey, I&apos;m Emir!</h1>
 
-        <p className={styles.description}>
-          Get started by editing{` `}
-          <code className={styles.code}>pages/index.js</code>
+        <p className="">
+          I&apos;m a fullstack engineer at{` `}
+          <a href="https://b12.io" target="_blank" rel="noopener noreferrer">
+            B12
+          </a>
         </p>
-
-        <p className={styles.description}>This is not an official starter!</p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=typescript-nextjs-starter"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
       </main>
 
-      <footer className={styles.footer}>
+      <footer>
         <a
-          href="https://vercel.com?utm_source=typescript-nextjs-starter"
+          href="https://github.com/progremir"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{` `}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
+          github
         </a>
+        {` `}
+        &bull;{` `}
+        <a
+          href="https://t.me/progremir"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          telegram
+        </a>
+        {` `}
+        &bull;{` `}
+        <a
+          href="https://twitter.com/progremir"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          twitter
+        </a>
+        {` `}
       </footer>
     </div>
   );
