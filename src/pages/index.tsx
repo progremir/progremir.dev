@@ -2,7 +2,7 @@ import Head from 'next/head';
 
 export default function Home() {
   return (
-    <div className="bg-gray-900">
+    <div className="h-screen flex justify-center flex-col items-center">
       <Head>
         <title>Emir Amanbekov - Fullstack Engineer</title>
         <meta name="description" content="Hey, I'm Emir!" />
@@ -26,8 +26,8 @@ export default function Home() {
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
 
-      <main className="">
-        <h1>Hey, I&apos;m Emir!</h1>
+      <main>
+        <h1 className="text-center">Hey, I&apos;m Emir!</h1>
 
         <p className="">
           I&apos;m a fullstack engineer at{` `}
@@ -36,8 +36,8 @@ export default function Home() {
           </a>
         </p>
       </main>
-
-      <footer>
+      <br />
+      <footer className="border-t-2 border-white">
         <a
           href="https://github.com/progremir"
           target="_blank"

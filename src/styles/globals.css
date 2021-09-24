@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-mono;
+    @apply text-white;
+    @apply bg-gray-800;
+  }
+}
