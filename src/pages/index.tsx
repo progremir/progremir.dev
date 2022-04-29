@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="h-screen flex justify-center flex-col items-center">
       <Head>
-        <title>Emir Amanbekov - Fullstack Engineer</title>
+        <title>Emir Amanbekov - Tech lead</title>
         <meta name="description" content="Hey, I'm Emir!" />
         <link
           rel="apple-touch-icon"
@@ -30,7 +30,7 @@ export default function Home() {
         <h1 className="text-center">Hey, I&apos;m Emir!</h1>
 
         <p className="">
-          I&apos;m a fullstack engineer at{` `}
+          I&apos;m a tech lead at{` `}
           <a href="https://b12.io" target="_blank" rel="noopener noreferrer">
             B12
           </a>
