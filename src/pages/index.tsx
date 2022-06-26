@@ -2,7 +2,7 @@ import Head from 'next/head';
 
 export default function Home() {
   return (
-    <div className="h-screen flex justify-center flex-col items-center">
+    <div className="h-screen flex justify-between flex-col items-center bg-no-repeat bg-bottom bg-[url('/sssquiggly.svg')]">
       <Head>
         <title>Emir Amanbekov - Tech lead</title>
         <meta name="description" content="Hey, I'm Emir!" />
@@ -25,19 +25,19 @@ export default function Home() {
         />
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
-
+      <header />
       <main>
-        <h1 className="text-center">Hey, I&apos;m Emir!</h1>
-
-        <p className="">
+        <h1 className="text-center">
+          Hey, I&apos;m Emir!
+          <br />
           I&apos;m a tech lead at{` `}
           <a href="https://b12.io" target="_blank" rel="noopener noreferrer">
             B12
           </a>
-        </p>
+        </h1>
       </main>
       <br />
-      <footer className="border-t-2 border-white">
+      <footer className="mb-10">
         <a
           href="https://github.com/progremir"
           target="_blank"

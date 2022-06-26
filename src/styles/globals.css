@@ -6,6 +6,18 @@
   body {
     @apply font-mono;
     @apply text-white;
-    @apply bg-gray-800;
+    background: linear-gradient(rgb(17, 24, 39), rgb(75, 85, 99))
+  }
+  h1 {
+    @apply text-2xl;
+  }
+  h2 {
+    @apply text-xl;
+  }
+  h3 {
+    @apply text-lg;
+  }
+  a {
+    @apply underline;
   }
 }
