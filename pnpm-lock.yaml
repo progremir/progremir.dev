@@ -9,7 +9,7 @@ specifiers:
   '@types/react-dom': 17.0.9
   '@typescript-eslint/eslint-plugin': 4.31.1
   '@typescript-eslint/parser': 4.31.1
-  autoprefixer: 10.3.5
+  autoprefixer: 10.4.7
   commitizen: 4.2.4
   cz-conventional-changelog: 3.3.0
   eslint: 7.32.0
@@ -46,7 +46,7 @@ devDependencies:
   '@types/react-dom': 17.0.9
   '@typescript-eslint/eslint-plugin': 4.31.1_4lj4rdjxqm24igbtmxareeum5e
   '@typescript-eslint/parser': 4.31.1_sek7ybhoe3wua6y4z6v7featku
-  autoprefixer: 10.3.5_postcss@8.3.7
+  autoprefixer: 10.4.7_postcss@8.3.7
   commitizen: 4.2.4
   cz-conventional-changelog: 3.3.0
   eslint: 7.32.0
@@ -1103,8 +1103,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /autoprefixer/10.3.5_postcss@8.3.7:
-    resolution: {integrity: sha512-2H5kQSsyoOMdIehTzIt/sC9ZDIgWqlkG/dbevm9B9xQZ1TDPBHpNUDW5ENqqQQzuaBWEo75JkV0LJe+o5Lnr5g==}
+  /autoprefixer/10.4.7_postcss@8.3.7:
+    resolution: {integrity: sha512-ypHju4Y2Oav95SipEcCcI5J7CGPuvz8oat7sUtYj3ClK44bldfvtvcxK6IEK++7rqB7YchDGzweZIBG+SD0ZAA==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
@@ -1113,8 +1113,8 @@ packages:
       browserslist: 4.21.0
       caniuse-lite: 1.0.30001359
       fraction.js: 4.2.0
-      nanocolors: 0.1.12
       normalize-range: 0.1.2
+      picocolors: 1.0.0
       postcss: 8.3.7
       postcss-value-parser: 4.2.0
     dev: true
