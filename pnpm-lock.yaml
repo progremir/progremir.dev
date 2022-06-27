@@ -25,7 +25,7 @@ specifiers:
   husky: 7.0.4
   lint-staged: 11.2.6
   next: 11.1.4
-  postcss: 8.3.7
+  postcss: 8.4.14
   prettier: 2.7.1
   react: 17.0.2
   react-dom: 17.0.2
@@ -46,7 +46,7 @@ devDependencies:
   '@types/react-dom': 17.0.17
   '@typescript-eslint/eslint-plugin': 4.31.1_4lj4rdjxqm24igbtmxareeum5e
   '@typescript-eslint/parser': 4.31.1_sek7ybhoe3wua6y4z6v7featku
-  autoprefixer: 10.4.7_postcss@8.3.7
+  autoprefixer: 10.4.7_postcss@8.4.14
   commitizen: 4.2.4
   cz-conventional-changelog: 3.3.0
   eslint: 7.32.0
@@ -61,7 +61,7 @@ devDependencies:
   eslint-plugin-react-hooks: 4.6.0_eslint@7.32.0
   husky: 7.0.4
   lint-staged: 11.2.6
-  postcss: 8.3.7
+  postcss: 8.4.14
   prettier: 2.7.1
   tailwindcss: 3.1.4
   typescript: 4.4.3
@@ -1103,7 +1103,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /autoprefixer/10.4.7_postcss@8.3.7:
+  /autoprefixer/10.4.7_postcss@8.4.14:
     resolution: {integrity: sha512-ypHju4Y2Oav95SipEcCcI5J7CGPuvz8oat7sUtYj3ClK44bldfvtvcxK6IEK++7rqB7YchDGzweZIBG+SD0ZAA==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
@@ -1115,7 +1115,7 @@ packages:
       fraction.js: 4.2.0
       normalize-range: 0.1.2
       picocolors: 1.0.0
-      postcss: 8.3.7
+      postcss: 8.4.14
       postcss-value-parser: 4.2.0
     dev: true
 
@@ -3422,10 +3422,6 @@ packages:
     resolution: {integrity: sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=}
     dev: true
 
-  /nanocolors/0.1.12:
-    resolution: {integrity: sha512-2nMHqg1x5PU+unxX7PGY7AuYxl2qDx7PSrTRjizr8sxdd3l/3hBuWWaki62qmtYm2U5i4Z5E7GbjlyDFhs9/EQ==}
-    dev: true
-
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -3949,15 +3945,6 @@ packages:
       nanoid: 3.3.4
       source-map: 0.6.1
 
-  /postcss/8.3.7:
-    resolution: {integrity: sha512-9SaY7nnyQ63/WittqZYAvkkYPyKxchMKH71UDzeTmWuLSvxTRpeEeABZAzlCi55cuGcoFyoV/amX2BdsafQidQ==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanocolors: 0.1.12
-      nanoid: 3.3.4
-      source-map-js: 0.6.2
-    dev: true
-
   /postcss/8.4.14:
     resolution: {integrity: sha512-E398TUmfAYFPBSdzgeieK2Y1+1cpdxJx8yXbK/m57nRhKSmk1GB2tO4lbLBtlkfPQTDKfe4Xqv1ASWPpayPEig==}
     engines: {node: ^10 || ^12 || >=14}
@@ -4411,11 +4398,6 @@ packages:
       ansi-styles: 4.3.0
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
-    dev: true
-
-  /source-map-js/0.6.2:
-    resolution: {integrity: sha512-/3GptzWzu0+0MBQFrDKzw/DvvMTUORvgY6k6jd/VS6iCR4RDTKWH6v6WPwQoUO8667uQEf9Oe38DxAYWY5F/Ug==}
-    engines: {node: '>=0.10.0'}
     dev: true
 
   /source-map-js/1.0.2:
