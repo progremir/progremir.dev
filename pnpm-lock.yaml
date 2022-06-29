@@ -6,7 +6,7 @@ specifiers:
   '@commitlint/config-conventional': 13.2.0
   '@types/node': 14.18.21
   '@types/react': 17.0.47
-  '@types/react-dom': 17.0.17
+  '@types/react-dom': 18.0.5
   '@typescript-eslint/eslint-plugin': 4.31.1
   '@typescript-eslint/parser': 4.31.1
   autoprefixer: 10.4.7
@@ -43,7 +43,7 @@ devDependencies:
   '@commitlint/config-conventional': 13.2.0
   '@types/node': 14.18.21
   '@types/react': 17.0.47
-  '@types/react-dom': 17.0.17
+  '@types/react-dom': 18.0.5
   '@typescript-eslint/eslint-plugin': 4.31.1_4lj4rdjxqm24igbtmxareeum5e
   '@typescript-eslint/parser': 4.31.1_sek7ybhoe3wua6y4z6v7featku
   autoprefixer: 10.4.7_postcss@8.4.14
@@ -751,8 +751,8 @@ packages:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
     dev: true
 
-  /@types/react-dom/17.0.17:
-    resolution: {integrity: sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==}
+  /@types/react-dom/18.0.5:
+    resolution: {integrity: sha512-OWPWTUrY/NIrjsAPkAk1wW9LZeIjSvkXRhclsFO8CZcZGCOg2G0YZy4ft+rOyYxy8B7ui5iZzi9OkDebZ7/QSA==}
     dependencies:
       '@types/react': 17.0.47
     dev: true
