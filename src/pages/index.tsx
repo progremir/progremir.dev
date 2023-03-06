@@ -27,14 +27,38 @@ export default function Home() {
       </Head>
       <header />
       <main>
-        <h1 className="text-center">
-          Hey, I&apos;m Emir!
-          <br />
-          I&apos;m a tech lead at{` `}
-          <a href="https://b12.io" target="_blank" rel="noopener noreferrer">
-            B12
-          </a>
-        </h1>
+        <div className="border-l-2 pl-4 ml-2 space-y-2">
+          <h1>&bull; Hey, I&apos;m Emir!</h1>
+          <h2 className="ml-5">
+            &bull; Currently: tech lead at{` `}
+            <a href="https://b12.io" target="_blank" rel="noopener noreferrer">
+              B12
+            </a>
+          </h2>
+          <h2 className="ml-5">&bull; Projects I worked on:</h2>
+          <ul className="ml-10">
+            <li>
+              &bull;{` `}
+              <a
+                href="https://carbon.progremir.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                The Carbon Alamanac: Chatbot
+              </a>
+            </li>
+            <li>
+              &bull;{` `}
+              <a
+                href="https://navalmanac.progremir.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Almanac of Naval Ravikant: Chatbot
+              </a>
+            </li>
+          </ul>
+        </div>
       </main>
       <br />
       <footer className="mb-10">
