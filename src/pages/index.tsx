@@ -27,38 +27,49 @@ export default function Home() {
       </Head>
       <header />
       <main>
-        <div className="border-l-2 pl-4 ml-2 space-y-2">
-          <h1>&bull; Hey, I&apos;m Emir!</h1>
-          <h2 className="ml-5">
-            &bull; Currently: tech lead at{` `}
+        <ul className="border-l-2 pl-4 space-y-2 list-disc list-inside">
+          <li>Hey, I&apos;m Emir!</li>
+          <li>I love making timelaps videos of myself doing stuff.</li>
+          <li>
+            Currently: founding engineer at{` `}
+            <a
+              href="https://kyohealth.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Kyo
+            </a>
+          </li>
+          <li>
+            Previously: tech lead at{` `}
             <a href="https://b12.io" target="_blank" rel="noopener noreferrer">
               B12
             </a>
-          </h2>
-          <h2 className="ml-5">&bull; Projects I worked on:</h2>
-          <ul className="ml-10">
-            <li>
-              &bull;{` `}
-              <a
-                href="https://carbon.progremir.dev"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                The Carbon Alamanac: Chatbot
-              </a>
-            </li>
-            <li>
-              &bull;{` `}
-              <a
-                href="https://navalmanac.progremir.dev"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Almanac of Naval Ravikant: Chatbot
-              </a>
-            </li>
-          </ul>
-        </div>
+          </li>
+          <li>
+            Projects I worked on:
+            <ul className="pl-5 mt-2 space-y-2 list-disc list-inside">
+              <li>
+                <a
+                  href="https://carbon.progremir.dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  The Carbon Alamanac: Chatbot
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://navalmanac.progremir.dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Almanac of Naval Ravikant: Chatbot
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </main>
       <br />
       <footer className="mb-10">
