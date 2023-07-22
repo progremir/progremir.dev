@@ -2,7 +2,7 @@ import Head from 'next/head';
 
 export default function Home() {
   return (
-    <div className="h-screen flex justify-between flex-col items-center bg-no-repeat bg-bottom bg-[url('/sssquiggly.svg')]">
+    <div className="h-screen flex justify-between sm:flex-col md:flex-row items-center bg-no-repeat bg-bottom bg-[url('/sssquiggly.svg')]">
       <Head>
         <title>Emir Amanbekov - Tech lead</title>
         <meta name="description" content="Hey, I'm Emir!" />
@@ -27,7 +27,7 @@ export default function Home() {
       </Head>
       <header />
       <main>
-        <ul className="border-l-2 pl-4 space-y-2 list-disc list-inside">
+        <ul className="border-l-2 pl-4 space-y-2 list-disc list-inside sm:text-base md:text-lg">
           <li>Hey, I&apos;m Emir!</li>
           <li>I love making timelaps videos of myself doing stuff.</li>
           <li>
