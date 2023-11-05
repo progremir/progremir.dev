@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import GitHubCalendar from 'react-github-calendar';
 
 export default function Home() {
   return (
@@ -71,7 +72,14 @@ export default function Home() {
           </li>
         </ul>
       </main>
-      <br />
+      <a
+        className="p-5 border-2 border-white rounded bg-blue-600/30 hover:shadow-xl transition-shadow duration-300"
+        href="https://github.com/progremir"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <GitHubCalendar username="progremir" />
+      </a>
       <footer className="mb-10">
         <a
           href="https://github.com/progremir"
