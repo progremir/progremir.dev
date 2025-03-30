@@ -1,22 +1,174 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<meta name="description" content="Personal website of Emir Amanbekov" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title}</title>
 	</head>
 	<body>
-		<slot />
+		<div class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('/xp-wallpaper.jpg');">
+			<div class="taskbar fixed bottom-0 left-0 right-0 h-[30px] bg-gradient-to-b from-[#245EDC] via-[#3C81F3] to-[#245EDC] flex items-center justify-between px-1">
+				<button class="start-button h-[25px] px-2 flex items-center bg-gradient-to-b from-[#3C8B27] via-[#57A127] to-[#3C8B27] text-white font-bold rounded shadow-inner border-[1px] border-[#6FB845] hover:from-[#4CA831] hover:via-[#6BC22C] hover:to-[#4CA831]">
+					<img src="/windows.svg" alt="Windows XP" class="w-4 h-4 mr-1" />
+					<span>start</span>
+				</button>
+				<div class="flex items-center">
+					<div class="flex items-center gap-4 px-4">
+						<a href="https://twitter.com/progremir" target="_blank" class="social-link">
+							<img src="/x.svg" alt="X (Twitter)" class="w-4 h-4 invert" />
+						</a>
+						<a href="https://instagram.com/progremir" target="_blank" class="social-link">
+							<img src="/ig.svg" alt="Instagram" class="w-4 h-4 invert" />
+						</a>
+						<a href="https://github.com/progremir" target="_blank" class="social-link">
+							<img src="/github.svg" alt="GitHub" class="w-4 h-4 invert" />
+						</a>
+						<a href="https://linkedin.com/in/progremir" target="_blank" class="social-link bg-white rounded-sm">
+							<img src="/linkedin.svg" alt="LinkedIn" class="w-4 h-4" />
+						</a>
+					</div>
+					<div class="time-widget h-[25px] min-w-[60px] px-2 flex items-center justify-center bg-gradient-to-b from-[#245EDC] via-[#3C81F3] to-[#245EDC] text-white text-sm border-l border-[#0842B5]">
+						<span id="time">12:00 PM</span>
+					</div>
+				</div>
+			</div>
+			<div class="p-4">
+				<slot />
+			</div>
+		</div>
+
+		<script>
+			function updateTime() {
+				const timeElement = document.getElementById('time');
+				if (timeElement) {
+					const now = new Date();
+					const hours = now.getHours();
+					const minutes = now.getMinutes();
+					const ampm = hours >= 12 ? 'PM' : 'AM';
+					const displayHours = hours % 12 || 12;
+					const displayMinutes = minutes.toString().padStart(2, '0');
+					timeElement.textContent = `${displayHours}:${displayMinutes} ${ampm}`;
+				}
+			}
+
+			// Update time immediately and then every minute
+			updateTime();
+			setInterval(updateTime, 60000);
+		</script>
 	</body>
 </html>
 
-<style>
-	html,
-	body {
+<style is:global>
+	:root {
+		--font-sans: "Tahoma", "Segoe UI", "Arial", sans-serif;
+	}
+
+	* {
+		box-sizing: border-box;
 		margin: 0;
-		width: 100%;
-		height: 100%;
+		padding: 0;
+	}
+
+	html {
+		font-family: var(--font-sans);
+		line-height: 1.6;
+		color: #000;
+	}
+
+	body {
+		min-height: 100vh;
+	}
+
+	/* Windows XP window style */
+	.window {
+		background: #fff;
+		border: 1px solid #1f4d9c;
+		border-radius: 8px 8px 4px 4px;
+		box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.25);
+		overflow: hidden;
+		backdrop-filter: blur(4px);
+	}
+
+	/* Windows XP title bar */
+	.title-bar {
+		background: linear-gradient(180deg, #0058EE 0%, #3890FF 5%, #2177FF 9%, #0F6BFF 14%, #0061FF 19%, #0058EE 25%, #0054E3 33%, #0054E3 37%, #0050DC 42%, #0050DC 46%, #0050DC 49%, #004EDB 53%, #004EDB 57%, #004EDB 60%, #004FDC 64%, #004FDC 67%, #005AE5 72%, #0062E8 77%, #0062E8 81%, #0062E8 85%, #0062E8 89%, #0064E9 94%, #0064E9 98%, #0066EA 100%);
+		color: white;
+		padding: 3px 5px 4px 6px;
+		font-weight: bold;
+		font-size: 13px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin: -1px -1px 0 -1px;
+		text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+	}
+
+	/* Windows XP button style */
+	.button {
+		width: 21px;
+		height: 21px;
+		background: linear-gradient(180deg, #FFF 0%, #ECE9D8 50%, #ECE9D8 100%);
+		border: 1px solid #003C74;
+		border-radius: 3px;
+		font-family: "Webdings";
+		font-size: 17px;
+		line-height: 17px;
+		color: #000;
+		margin-left: 2px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-bottom: 2px;
+	}
+
+	.button:hover {
+		background: linear-gradient(180deg, #FFE8C9 0%, #FFB765 50%, #FFB765 100%);
+		border-color: #003C74;
+	}
+
+	.button:active {
+		background: linear-gradient(180deg, #FFB765 0%, #FFE8C9 50%, #FFE8C9 100%);
+		padding-top: 2px;
+		padding-bottom: 0;
+	}
+
+	/* Windows XP link style */
+	a {
+		color: #0000EE;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+
+	.social-link {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		border-radius: 3px;
+		transition: background-color 0.2s;
+	}
+
+	.social-link:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.social-link.bg-white:hover {
+		background-color: rgba(255, 255, 255, 0.9);
 	}
 </style>
