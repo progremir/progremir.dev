@@ -10,8 +10,8 @@ import Layout from '../layouts/Layout.astro';
 		<div class="window mb-4">
 			<div class="title-bar">
 				<div class="flex items-center gap-1">
-					<span class="w-4 h-4">📝</span>
-					<span>About Me - Notepad</span>
+					<img src="/notepad.svg" alt="Notepad" class="w-4 h-4" />
+					<span>About Me</span>
 				</div>
 				<div class="flex">
 					<button class="button">0</button>
@@ -25,57 +25,52 @@ import Layout from '../layouts/Layout.astro';
 			</div>
 		</div>
 		
-		<div class="window">
+		<div class="window max-w-3xl mx-auto mt-8">
 			<div class="title-bar">
 				<div class="flex items-center gap-1">
-					<span class="w-4 h-4">💼</span>
-					<span>Experience.txt - Notepad</span>
+					<img src="/notepad.svg" alt="Notepad" class="w-4 h-4" />
+					<span>Experience</span>
 				</div>
 				<div class="flex">
-					<button class="button">0</button>
-					<button class="button">1</button>
-					<button class="button">r</button>
+					<button class="button" title="Minimize">0</button>
+					<button class="button" title="Maximize">1</button>
+					<button class="button" title="Close">r</button>
 				</div>
 			</div>
-			
-			<div class="p-4">
-				<section class="mb-6">
-					<h2 class="text-lg font-bold mb-2 text-gray-900">Currently</h2>
-					<ul class="divide-y divide-[#ECE9D8]">
-						<li class="py-2">
-							<div class="flex justify-between items-baseline">
-								<div>
-									<h3 class="text-base font-medium text-gray-900">Software Engineer</h3>
-									<a href="https://jo.xyz" class="text-sm text-[#0000EE]">Jo</a>
-								</div>
-								<span class="text-sm text-gray-500">2025 - now</span>
+			<div class="window-content p-6 bg-white">
+				<div class="space-y-8">
+					<section>
+						<h2 class="text-xl font-bold mb-4">Currently</h2>
+						<div class="experience-item">
+							<div class="flex justify-between items-baseline mb-1">
+								<h3 class="text-lg">Software Engineer</h3>
+								<span class="text-gray-600">2025 - now</span>
 							</div>
-						</li>
-					</ul>
-				</section>
+							<a href="https://www.jo.com" class="text-[#0000EE] hover:underline">Jo</a>
+						</div>
+					</section>
 
-				<h2 class="text-lg font-bold mb-2 text-gray-900">Previously</h2>
-				<ul class="divide-y divide-[#ECE9D8]">
-					<li class="py-2">
-						<div class="flex justify-between items-baseline">
-							<div>
-								<h3 class="text-base font-medium text-gray-900">Founding Engineer</h3>
-								<a href="https://kyohealth.ai" class="text-sm text-[#0000EE]">KyoHealth</a>
+					<section>
+						<h2 class="text-xl font-bold mb-4">Previously</h2>
+						<div class="space-y-6">
+							<div class="experience-item">
+								<div class="flex justify-between items-baseline mb-1">
+									<h3 class="text-lg">Founding Engineer</h3>
+									<span class="text-gray-600">2023 - 2025</span>
+								</div>
+								<a href="https://www.kyohealth.com" class="text-[#0000EE] hover:underline">KyoHealth</a>
 							</div>
-							<span class="text-sm text-gray-500">2023 - 2025</span>
-						</div>
-					</li>
-					
-					<li class="py-2">
-						<div class="flex justify-between items-baseline">
-							<div>
-								<h3 class="text-base font-medium text-gray-900">Software Engineer</h3>
-								<a href="https://b12.io" class="text-sm text-[#0000EE]">B12</a>
+
+							<div class="experience-item">
+								<div class="flex justify-between items-baseline mb-1">
+									<h3 class="text-lg">Software Engineer</h3>
+									<span class="text-gray-600">2019 - 2023</span>
+								</div>
+								<a href="https://www.b12.io" class="text-[#0000EE] hover:underline">B12</a>
 							</div>
-							<span class="text-sm text-gray-500">2019 - 2023</span>
 						</div>
-					</li>
-				</ul>
+					</section>
+				</div>
 			</div>
 		</div>
 	</main>
