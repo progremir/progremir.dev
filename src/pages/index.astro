@@ -14,9 +14,9 @@ import Layout from '../layouts/Layout.astro';
 					<span>About Me</span>
 				</div>
 				<div class="flex">
-					<button class="button">0</button>
-					<button class="button">1</button>
-					<button class="button">r</button>
+					<button class="window-button" title="Minimize">0</button>
+					<button class="window-button" title="Maximize">1</button>
+					<button class="window-button window-button-close" title="Close">r</button>
 				</div>
 			</div>
 			<div class="p-4">
@@ -32,9 +32,9 @@ import Layout from '../layouts/Layout.astro';
 					<span>Experience</span>
 				</div>
 				<div class="flex">
-					<button class="button" title="Minimize">0</button>
-					<button class="button" title="Maximize">1</button>
-					<button class="button" title="Close">r</button>
+					<button class="window-button" title="Minimize">0</button>
+					<button class="window-button" title="Maximize">1</button>
+					<button class="window-button window-button-close" title="Close">r</button>
 				</div>
 			</div>
 			<div class="window-content p-6 bg-white">
@@ -46,7 +46,7 @@ import Layout from '../layouts/Layout.astro';
 								<h3 class="text-lg">Software Engineer</h3>
 								<span class="text-gray-600">2025 - now</span>
 							</div>
-							<a href="https://www.jo.com" class="text-[#0000EE] hover:underline">Jo</a>
+							<a href="https://www.jo.xyz" class="text-[#0000EE] hover:underline">Jo</a>
 						</div>
 					</section>
 
@@ -58,9 +58,8 @@ import Layout from '../layouts/Layout.astro';
 									<h3 class="text-lg">Founding Engineer</h3>
 									<span class="text-gray-600">2023 - 2025</span>
 								</div>
-								<a href="https://www.kyohealth.com" class="text-[#0000EE] hover:underline">KyoHealth</a>
+								<a href="https://www.kyohealth.ai" class="text-[#0000EE] hover:underline">KyoHealth</a>
 							</div>
-
 							<div class="experience-item">
 								<div class="flex justify-between items-baseline mb-1">
 									<h3 class="text-lg">Software Engineer</h3>
@@ -73,5 +72,187 @@ import Layout from '../layouts/Layout.astro';
 				</div>
 			</div>
 		</div>
+		<div id="error-container" class="fixed inset-0 pointer-events-none"></div>
 	</main>
 </Layout>
+
+<script>
+	const messages = [
+		"Error: Too much experience detected",
+		"Warning: Skills overflow",
+		"Critical: Resume.exe has stopped working",
+		"Error: Coffee level critically low",
+		"Warning: Code quality exceeds expectations",
+		"Error: Bug fixed itself (impossible)",
+		"Critical: Stack overflow in experience.txt",
+		"Warning: Excessive productivity detected",
+		"Error: Task failed successfully",
+		"Critical: Too many windows open ;)"
+	];
+
+	function createErrorWindow(message: string, index: number) {
+		const error = document.createElement('div');
+		error.className = 'window error-window fixed';
+		error.style.zIndex = '1000';
+		error.style.width = '380px';
+		error.style.animation = 'popup 0.2s ease-out';
+		error.style.left = `${20 + (index * 20)}px`;
+		error.style.top = `${20 + (index * 20)}px`;
+
+		error.innerHTML = `
+			<div class="title-bar bg-[#0055EA] text-white flex items-center justify-between px-[6px] py-[4px] select-none">
+				<div class="flex items-center gap-[6px]">
+					<img src="/error.svg" alt="Error" class="w-4 h-4" />
+					<span class="text-[13px] font-bold tracking-tight">Windows</span>
+				</div>
+				<div class="flex">
+					<button class="window-button window-button-close text-white w-[21px] h-[21px] flex items-center justify-center font-['Webdings'] text-[17px] leading-[17px] ml-[2px] bg-transparent border-none hover:bg-[rgba(255,255,255,0.1)] active:bg-[rgba(255,255,255,0.2)] active:pt-[1px]" title="Close">r</button>
+				</div>
+			</div>
+			<div class="p-[15px] bg-[#F1F1F1] flex items-start gap-[13px]">
+				<img src="/error-icon.svg" alt="Error" class="w-[32px] h-[32px] mt-[2px]" />
+				<div class="flex-1">
+					<p class="mb-[14px] font-[11px] leading-[13px] text-[#000000] max-w-[240px]">${message}</p>
+					<div class="flex justify-end">
+						<button class="error-ok min-w-[75px] h-[23px] px-[12px] py-0 bg-gradient-to-b from-white to-[#ECE9D8] border border-[#888888] rounded text-[11px] hover:from-[#FFE8C9] hover:to-[#FFB765] active:from-[#FFB765] active:to-[#FFE8C9] active:pt-[2px] active:pb-0 focus:outline-none focus:border-[#000000] focus:border-dotted">OK</button>
+					</div>
+				</div>
+			</div>
+		`;
+
+		return error;
+	}
+
+	function spawnErrors() {
+		const container = document.getElementById('error-container');
+		if (!container) return;
+
+		container.innerHTML = '';
+		let delay = 0;
+
+		messages.forEach((message, index) => {
+			setTimeout(() => {
+				const error = createErrorWindow(message, index);
+				container.appendChild(error);
+				
+				// Play error sound
+				const audio = new Audio('/error.mp3');
+				audio.volume = 0.2;
+				audio.play();
+
+				// Handle close button and OK button
+				const closeBtn = error.querySelector('.window-button-close');
+				const okBtn = error.querySelector('.error-ok');
+				const closeWindow = () => {
+					error.style.animation = 'closeWindow 0.1s ease-out';
+					error.addEventListener('animationend', () => error.remove());
+				};
+				closeBtn?.addEventListener('click', closeWindow);
+				okBtn?.addEventListener('click', closeWindow);
+			}, delay);
+			delay += 200;
+		});
+	}
+
+	// Add click handler to start button
+	document.querySelector('.taskbar .start-button')?.addEventListener('click', spawnErrors);
+</script>
+
+<style>
+	.window-button {
+		width: 21px;
+		height: 21px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: "Webdings";
+		color: #000000;
+		font-size: 17px;
+		line-height: 17px;
+		margin-left: 2px;
+		background: linear-gradient(180deg, #FFFFFF 0%, #ECE9D8 50%, #ECE9D8 100%);
+		border: 1px solid #003C74;
+		border-radius: 3px;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.window-button:hover {
+		background: linear-gradient(180deg, #FFE8C9 0%, #FFB765 50%, #FFB765 100%);
+	}
+
+	.window-button:active {
+		background: linear-gradient(180deg, #FFB765 0%, #FFE8C9 50%, #FFE8C9 100%);
+		padding-top: 1px;
+		padding-bottom: 0;
+	}
+
+	.window-button-close:hover {
+		background: linear-gradient(180deg, #FFD7D7 0%, #FF9D9D 50%, #FF9D9D 100%);
+	}
+
+	.window-button-close:active {
+		background: linear-gradient(180deg, #FF9D9D 0%, #FFD7D7 50%, #FFD7D7 100%);
+	}
+
+	.error-window {
+		box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.25);
+		pointer-events: auto;
+		border: 1px solid #0055EA;
+		border-radius: 8px 8px 4px 4px;
+		font-family: "Tahoma", sans-serif;
+	}
+
+	@keyframes popup {
+		0% {
+			transform: scale(0.95);
+			opacity: 0;
+		}
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
+	@keyframes closeWindow {
+		0% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(0.95);
+			opacity: 0;
+		}
+	}
+
+	.error-close-button {
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		margin: 0;
+		opacity: 0.8;
+	}
+
+	.error-close-button:hover {
+		opacity: 1;
+	}
+
+	.error-close-button:active {
+		opacity: 0.6;
+	}
+
+	.error-window .window-button {
+		background: transparent;
+		border: none;
+	}
+
+	.error-window .window-button:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.error-window .window-button:active {
+		background: rgba(255, 255, 255, 0.2);
+		padding-top: 1px;
+	}
+</style>
