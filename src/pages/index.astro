@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import "xp.css";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
@@ -7,305 +8,167 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title="Emir Amanbekov">
   <main class="max-w-2xl mx-auto">
-    <div class="window mb-4">
-      <div class="title-bar">
-        <div class="flex items-center gap-1">
-          <img src="/notepad.svg" alt="Notepad" class="w-4 h-4" />
+    <div class="window">
+      <div
+        class="title-bar"
+        style={{
+          height: "30px",
+        }}
+      >
+        <div class="title-bar-text">
           <span>About Me</span>
         </div>
-        <div class="flex">
-          <button class="window-button" title="Minimize">
-            <svg width="12" height="2" viewBox="0 0 12 2" fill="currentColor">
-              <rect width="12" height="2"></rect>
-            </svg>
-          </button>
-          <button class="window-button" title="Maximize">
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              stroke="currentColor"
-            >
-              <rect x="1" y="1" width="8" height="8" stroke-width="1.5"></rect>
-            </svg>
-          </button>
-          <button class="window-button window-button-close" title="Close">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path
-                d="M1 1L9 9M9 1L1 9"
-                stroke="currentColor"
-                stroke-width="1.5"></path>
-            </svg>
-          </button>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize"> </button>
+          <button aria-label="Maximize"> </button>
+          <button aria-label="Close"> </button>
         </div>
       </div>
-      <div class="p-4">
-        <h1 class="text-2xl font-bold m-0 leading-tight text-gray-900">
-          Emir Amanbekov
-        </h1>
-        <p class="text-sm text-gray-500 mt-1">progremir</p>
+      <div class="window-body">
+        <p class="text-sm p-2">
+          Hey, I'm Emir. I'm a software engineer based in Bishkek, Kyrgyzstan.
+          You might also know me as <span class="font-bold">progremir</span>.
+        </p>
       </div>
     </div>
 
     <div class="window max-w-3xl mx-auto mt-8">
-      <div class="title-bar">
-        <div class="flex items-center gap-1">
-          <img src="/notepad.svg" alt="Notepad" class="w-4 h-4" />
+      <div
+        class="title-bar"
+        style={{
+          height: "30px",
+        }}
+      >
+        <div class="title-bar-text">
           <span>Experience</span>
         </div>
-        <div class="flex">
-          <button class="window-button" title="Minimize">
-            <svg width="12" height="2" viewBox="0 0 12 2" fill="currentColor">
-              <rect width="12" height="2"></rect>
-            </svg>
-          </button>
-          <button class="window-button" title="Maximize">
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              stroke="currentColor"
-            >
-              <rect x="1" y="1" width="8" height="8" stroke-width="1.5"></rect>
-            </svg>
-          </button>
-          <button class="window-button window-button-close" title="Close">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path
-                d="M1 1L9 9M9 1L1 9"
-                stroke="currentColor"
-                stroke-width="1.5"></path>
-            </svg>
-          </button>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize"> </button>
+          <button aria-label="Maximize"> </button>
+          <button aria-label="Close"> </button>
         </div>
       </div>
-      <div class="window-content p-6 bg-white">
-        <div class="space-y-8">
-          <section>
-            <h2 class="text-xl font-bold mb-4">Currently</h2>
-            <div class="experience-item">
+      <div class="window-body">
+        <div class="p-2">
+          <ul class="space-y-2">
+            <li class="flex justify-between items-baseline mb-1">
+              <p class="text-sm">
+                Software Engineer at <a
+                  href="https://www.jo.xyz"
+                  class="text-[#0000EE] hover:underline">Jo Solutions</a
+                >
+              </p>
+              <span class="text-gray-600">2025 - now</span>
+            </li>
+            <li>
               <div class="flex justify-between items-baseline mb-1">
-                <h3 class="text-lg">Software Engineer</h3>
-                <span class="text-gray-600">2025 - now</span>
+                <p class="text-sm">
+                  Founding Engineer at <a
+                    href="https://www.kyohealth.ai"
+                    class="text-[#0000EE] hover:underline">KyoHealth</a
+                  >
+                </p>
+                <span class="text-gray-600">2023 - 2025</span>
               </div>
-              <a
-                href="https://www.jo.xyz"
-                class="text-[#0000EE] hover:underline">Jo</a
-              >
-            </div>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-bold mb-4">Previously</h2>
-            <div class="space-y-6">
-              <div class="experience-item">
-                <div class="flex justify-between items-baseline mb-1">
-                  <h3 class="text-lg">Founding Engineer</h3>
-                  <span class="text-gray-600">2023 - 2025</span>
-                </div>
-                <a
-                  href="https://www.kyohealth.ai"
-                  class="text-[#0000EE] hover:underline">KyoHealth</a
-                >
+            </li>
+            <li>
+              <div class="flex justify-between items-baseline mb-1">
+                <p class="text-sm">
+                  Software Engineer at <a
+                    href="https://www.b12.io"
+                    class="text-[#0000EE] hover:underline">B12</a
+                  >
+                </p>
+                <span class="text-gray-600">2019 - 2023</span>
               </div>
-              <div class="experience-item">
-                <div class="flex justify-between items-baseline mb-1">
-                  <h3 class="text-lg">Software Engineer</h3>
-                  <span class="text-gray-600">2019 - 2023</span>
-                </div>
-                <a
-                  href="https://www.b12.io"
-                  class="text-[#0000EE] hover:underline">B12</a
-                >
-              </div>
-            </div>
-          </section>
+            </li>
+          </ul>
         </div>
       </div>
+      <div id="error-container" class="fixed inset-0 pointer-events-none"></div>
     </div>
-    <div id="error-container" class="fixed inset-0 pointer-events-none"></div>
-  </main>
-</Layout>
 
-<script>
-  const messages = [
-    "Fatal Error: KEYBOARD_NOT_FOUND\nPress any key to continue",
-    "System Warning: ID-10-T error detected",
-    "Critical Error: REALITY.DLL not found",
-    "Error 0x2A: Task failed successfully",
-    "Warning: This error intentionally left blank",
-    "Critical: Division by zero attempted",
-    "Critical: Skill issue detected",
-  ];
+    <script>
+      const messages = [
+        "Fatal Error: KEYBOARD_NOT_FOUND\nPress any key to continue",
+        "System Warning: ID-10-T error detected",
+        "Critical Error: REALITY.DLL not found",
+        "Error 0x2A: Task failed successfully",
+        "Warning: This error intentionally left blank",
+        "Critical: Division by zero attempted",
+        "Critical: Skill issue detected",
+      ];
 
-  function createErrorWindow(message: string, index: number) {
-    const error = document.createElement("div");
-    error.className = "window error-window fixed";
-    error.style.zIndex = "1000";
-    error.style.width = "380px";
-    error.style.animation = "popup 0.2s ease-out";
-    error.style.left = `${20 + index * 20}px`;
-    error.style.top = `${20 + index * 20}px`;
+      function createErrorWindow(message: string, index: number) {
+        const error = document.createElement("div");
+        error.className = "window error-window fixed";
+        error.style.zIndex = "1000";
+        error.style.width = "380px";
+        error.style.animation = "popup 0.2s ease-out";
+        error.style.left = `${20 + index * 20}px`;
+        error.style.top = `${20 + index * 20}px`;
 
-    error.innerHTML = `
-			<div class="title-bar bg-[#0055EA] text-white flex items-center justify-between px-[6px] py-[4px] select-none">
-				<div class="flex items-center gap-[6px]">
-					<img src="/error.svg" alt="Error" class="w-4 h-4" />
-					<span class="text-[13px] font-bold tracking-tight">Windows</span>
-				</div>
-				<div class="flex">
-					<button class="window-button window-button-close text-white w-[21px] h-[21px] flex items-center justify-center ml-[2px] bg-transparent border-none hover:bg-[rgba(255,255,255,0.1)] active:bg-[rgba(255,255,255,0.2)] active:pt-[1px]" title="Close">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-          </button>
-				</div>
-			</div>
-			<div class="p-[15px] bg-[#F1F1F1] flex items-start gap-[13px]">
-				<img src="/error-icon.svg" alt="Error" class="w-[32px] h-[32px] mt-[2px]" />
-				<div class="flex-1">
-					<p class="mb-[14px] font-[11px] leading-[13px] text-[#000000] max-w-[240px]">${message}</p>
-					<div class="flex justify-end">
-						<button class="error-ok min-w-[75px] h-[23px] px-[12px] py-0 bg-gradient-to-b from-white to-[#ECE9D8] border border-[#888888] rounded text-[11px] hover:from-[#FFE8C9] hover:to-[#FFB765] active:from-[#FFB765] active:to-[#FFE8C9] active:pt-[2px] active:pb-0 focus:outline-none focus:border-[#000000] focus:border-dotted">OK</button>
-					</div>
-				</div>
-			</div>
+        error.innerHTML = `
+      <div class="window">
+        <div class="title-bar">
+          <div class="title-bar-text">
+            <span>Windows</span>
+          </div>
+          <div class="title-bar-controls">
+            <button aria-label="Close">
+            </button>
+          </div>
+        </div>
+        <div class="p-[15px] bg-[#F1F1F1] flex items-start gap-[13px]">
+          <img src="/error-icon.svg" alt="Error" class="w-[32px] h-[32px] mt-[2px]" />
+          <div class="flex-1">
+            <p class="mb-[14px] font-[11px] leading-[13px] text-[#000000] max-w-[240px]">${message}</p>
+            <div class="flex justify-end">
+              <button>OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
 		`;
 
-    return error;
-  }
+        return error;
+      }
 
-  function spawnErrors() {
-    const container = document.getElementById("error-container");
-    if (!container) return;
+      function spawnErrors() {
+        const container = document.getElementById("error-container");
+        if (!container) return;
 
-    container.innerHTML = "";
-    let delay = 0;
+        container.innerHTML = "";
+        let delay = 0;
 
-    messages.forEach((message, index) => {
-      setTimeout(() => {
-        const error = createErrorWindow(message, index);
-        container.appendChild(error);
+        messages.forEach((message, index) => {
+          setTimeout(() => {
+            const error = createErrorWindow(message, index);
+            container.appendChild(error);
 
-        // Play error sound
-        const audio = new Audio("/error.mp3");
-        audio.volume = 0.2;
-        audio.play();
+            // Play error sound
+            const audio = new Audio("/error.mp3");
+            audio.volume = 0.2;
+            audio.play();
 
-        // Handle close button and OK button
-        const closeBtn = error.querySelector(".window-button-close");
-        const okBtn = error.querySelector(".error-ok");
-        const closeWindow = () => {
-          error.style.animation = "closeWindow 0.1s ease-out";
-          error.addEventListener("animationend", () => error.remove());
-        };
-        closeBtn?.addEventListener("click", closeWindow);
-        okBtn?.addEventListener("click", closeWindow);
-      }, delay);
-      delay += 200;
-    });
-  }
+            // Handle close button and OK button
+            const closeBtn = error.querySelector(".window-button-close");
+            const okBtn = error.querySelector(".error-ok");
+            const closeWindow = () => {
+              error.style.animation = "closeWindow 0.1s ease-out";
+              error.addEventListener("animationend", () => error.remove());
+            };
+            closeBtn?.addEventListener("click", closeWindow);
+            okBtn?.addEventListener("click", closeWindow);
+          }, delay);
+          delay += 200;
+        });
+      }
 
-  // Add click handler to start button
-  document
-    .querySelector(".taskbar .start-button")
-    ?.addEventListener("click", spawnErrors);
-</script>
-
-<style>
-  .window-button {
-    width: 21px;
-    height: 21px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #000000;
-    margin-left: 2px;
-    background: linear-gradient(180deg, #ffffff 0%, #ece9d8 50%, #ece9d8 100%);
-    border: 1px solid #003c74;
-    border-radius: 3px;
-    padding: 0;
-    cursor: pointer;
-  }
-
-  .window-button:hover {
-    background: linear-gradient(180deg, #ffe8c9 0%, #ffb765 50%, #ffb765 100%);
-  }
-
-  .window-button:active {
-    background: linear-gradient(180deg, #ffb765 0%, #ffe8c9 50%, #ffe8c9 100%);
-    padding-top: 1px;
-    padding-bottom: 0;
-  }
-
-  .window-button-close:hover {
-    background: linear-gradient(180deg, #ffd7d7 0%, #ff9d9d 50%, #ff9d9d 100%);
-  }
-
-  .window-button-close:active {
-    background: linear-gradient(180deg, #ff9d9d 0%, #ffd7d7 50%, #ffd7d7 100%);
-  }
-
-  .error-window {
-    box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.25);
-    pointer-events: auto;
-    border: 1px solid #0055ea;
-    border-radius: 8px 8px 4px 4px;
-    font-family: "Tahoma", sans-serif;
-  }
-
-  @keyframes popup {
-    0% {
-      transform: scale(0.95);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes closeWindow {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(0.95);
-      opacity: 0;
-    }
-  }
-
-  .error-close-button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-    opacity: 0.8;
-  }
-
-  .error-close-button:hover {
-    opacity: 1;
-  }
-
-  .error-close-button:active {
-    opacity: 0.6;
-  }
-
-  .error-window .window-button {
-    background: transparent;
-    border: none;
-  }
-
-  .error-window .window-button:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .error-window .window-button:active {
-    background: rgba(255, 255, 255, 0.2);
-    padding-top: 1px;
-  }
-</style>
+      // Add click handler to start button
+      document
+        .querySelector(".taskbar .start-button")
+        ?.addEventListener("click", spawnErrors);
+    </script>
+  </main>
+</Layout>

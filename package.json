@@ -9,13 +9,15 @@
     "astro": "astro"
   },
   "dependencies": {
+    "98.css": "^0.1.20",
     "@astrojs/react": "^4.2.2",
     "@tailwindcss/vite": "^4.0.17",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
     "astro": "^5.5.5",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "xp.css": "^0.2.6"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
