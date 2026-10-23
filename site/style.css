@@ -87,13 +87,22 @@ b { font-weight: 500; }
   display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px;
   border: 1px solid var(--faint); border-radius: 8px;
 }
-.draft { white-space: pre; }
+.draft { flex: 1; min-width: 0; margin-left: -10px; white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.draft.ghost { opacity: .4; }
 .cursor {
-  display: inline-block; width: 8px; height: 17px; margin-left: -8px;
+  display: inline-block; width: 8px; height: 17px;
   background: var(--text); animation: blink 1s steps(1) infinite;
 }
-.hint { color: var(--faint); }
-.status { padding: 4px 12px 0; font-size: 12px; color: var(--faint); }
+.tab {
+  flex: none; padding: 0 6px; border: 1px solid var(--faint); border-radius: 4px;
+  font: inherit; font-size: 12px; color: var(--muted);
+  transition: background-color .12s, color .12s;
+}
+.tab.pressed { background: var(--text); color: var(--bg); border-color: var(--text); }
+.status { display: flex; justify-content: space-between; gap: 8px; padding: 4px 12px 0; font-size: 12px; color: var(--faint); }
+.skip { padding: 0; border: 0; background: none; color: var(--muted); font: inherit; cursor: pointer; }
+.skip:hover { color: var(--text); }
+.skip[hidden] { display: none; }
 
 @media (max-width: 640px) {
   .desk { padding: 0; }

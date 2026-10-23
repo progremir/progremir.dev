@@ -3,5 +3,10 @@
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./site"
-  }
+  },
+  // Give each branch preview a workers.dev URL so Workers Builds can link it on PRs.
+  "preview_urls": true,
+  // Required by `wrangler preview` (Workers Builds on non-production branches).
+  // Empty is enough: the site has no bindings to override for previews.
+  "previews": {}
 }

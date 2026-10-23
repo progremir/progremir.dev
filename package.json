@@ -1,0 +1,7 @@
+{
+  "name": "progremir-dev",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site in site/, nothing to build'"
+  }
+}
