@@ -13,62 +13,57 @@
   <script src="/main.js" defer></script>
 </head>
 <body>
-  <header class="header">
-    <div class="wrap header-inner">
-      <a href="#top" class="logo">progremir<span class="dim">.dev</span></a>
-      <nav aria-label="Primary" class="nav">
-        <a href="#work">work/</a>
-        <a href="#socials">socials/</a>
-        <span class="clock"><span class="pulse" aria-hidden="true">●</span><span id="clock">--:--</span> almaty</span>
-      </nav>
-    </div>
-  </header>
-
-  <main id="top">
-    <div class="hero">
-      <canvas id="mountains" width="360" height="150" role="img" aria-label="Dithered illustration of the Ile Alatau mountains above Almaty at dusk with a red sun and drifting clouds"></canvas>
-      <button id="pause" class="pause" aria-pressed="false">pause ‖</button>
-    </div>
-
-    <section class="wrap intro">
-      <p class="cmd"><span class="dim">$</span> whoami</p>
-      <h1 aria-label="Emir Amanbekov"><span id="typed" aria-hidden="true">Emir Amanbekov</span><span class="caret-text" aria-hidden="true"></span></h1>
-      <p class="lede">Software engineer based in Almaty, Kazakhstan. You might also know me as <span class="sig">progremir</span>.</p>
-    </section>
-
-    <section id="work" class="wrap section">
-      <div class="section-head">
-        <h2><span class="dim">$</span> ls work/</h2>
-        <span class="meta">3 entries</span>
+  <div class="desk">
+    <div class="win">
+      <div class="titlebar">
+        <div class="lights" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="title">emir@macbook: ~/progremir.dev</div>
+        <div class="clock"><span id="clock">--:--</span> almaty</div>
       </div>
-      <ul class="list">
-        <li><a class="row job" href="https://www.jo.xyz"><span class="name">Jo Solutions<span class="sig dot" aria-label="current">●</span></span><span class="dim">Software Engineer</span><span class="dim date">2025 — now ↗</span></a></li>
-        <li><a class="row job" href="https://www.kyohealth.ai"><span class="name">KyoHealth</span><span class="dim">Founding Engineer</span><span class="dim date">2023 — 2025 ↗</span></a></li>
-        <li><a class="row job" href="https://www.b12.io"><span class="name">B12</span><span class="dim">Software Engineer</span><span class="dim date">2019 — 2023 ↗</span></a></li>
-      </ul>
-    </section>
 
-    <section id="socials" class="wrap section">
-      <div class="section-head">
-        <h2><span class="dim">$</span> ls socials/</h2>
-        <span class="meta">4 entries</span>
+      <main class="scroll" id="scroll">
+        <h1 class="sr-only">Emir Amanbekov, software engineer in Almaty, Kazakhstan</h1>
+
+        <div class="intro">
+          <svg aria-hidden="true" width="84" height="56" viewBox="0 0 12 8" shape-rendering="crispEdges">
+            <rect x="5" y="0" width="2" height="1" fill="#f2f2ec"/>
+            <rect x="4" y="1" width="4" height="1" fill="#f2f2ec"/>
+            <rect x="3" y="2" width="2" height="1" fill="#b11226"/><rect x="5" y="2" width="2" height="1" fill="#f2f2ec"/><rect x="7" y="2" width="2" height="1" fill="#b11226"/>
+            <rect x="2" y="3" width="8" height="1" fill="#b11226"/>
+            <rect x="1" y="4" width="10" height="1" fill="#b11226"/>
+            <rect x="3" y="3" width="1" height="2" fill="#0a0a0a"/><rect x="8" y="3" width="1" height="2" fill="#0a0a0a"/>
+            <rect x="0" y="5" width="12" height="2" fill="#b11226"/>
+            <rect x="1" y="7" width="2" height="1" fill="#b11226"/><rect x="9" y="7" width="2" height="1" fill="#b11226"/>
+          </svg>
+          <div class="intro-text">
+            <span><b>progremir.dev</b> <span class="dim">v2026.10</span></span>
+            <span class="dim">Emir Amanbekov · Software Engineer</span>
+            <span class="dim">/home/emir</span>
+          </div>
+        </div>
+
+        <div class="log" id="log"></div>
+
+        <noscript>
+          <div class="log">
+            <p>Emir Amanbekov, also known as progremir. Software engineer based in Almaty, Kazakhstan.</p>
+            <ul>
+              <li><a href="https://www.jo.xyz">Jo Solutions</a> — Software Engineer, 2025–now</li>
+              <li><a href="https://www.kyohealth.ai">KyoHealth</a> — Founding Engineer, 2023–2025</li>
+              <li><a href="https://www.b12.io">B12</a> — Software Engineer, 2019–2023</li>
+            </ul>
+            <p><a href="https://github.com/progremir">GitHub</a> · <a href="https://twitter.com/progremir">X</a> · <a href="https://instagram.com/progremir">Instagram</a> · <a href="https://linkedin.com/in/progremir">LinkedIn</a></p>
+          </div>
+        </noscript>
+      </main>
+
+      <div class="bottom" aria-hidden="true">
+        <div class="spinner" id="spinner"></div>
+        <div class="input"><span class="dim">❯</span><span class="draft" id="draft"></span><span class="cursor"></span><span class="hint" id="hint" hidden>Try "is he hiring? make it quick"</span></div>
+        <div class="status">? for shortcuts</div>
       </div>
-      <nav aria-label="Socials" class="socials">
-        <a class="row" href="https://github.com/progremir">github <span class="sig">↗</span></a>
-        <a class="row" href="https://twitter.com/progremir">x <span class="sig">↗</span></a>
-        <a class="row" href="https://instagram.com/progremir">instagram <span class="sig">↗</span></a>
-        <a class="row" href="https://linkedin.com/in/progremir">linkedin <span class="sig">↗</span></a>
-      </nav>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <span>© <span id="year">2026</span> Emir Amanbekov</span>
-      <span>fig. 01 — Ile Alatau, 43.24°N 76.89°E, bayer 4×4</span>
     </div>
-  </footer>
-
+  </div>
   <span class="caret" id="caret" aria-hidden="true"></span>
 </body>
 </html>
