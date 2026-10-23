@@ -1,6 +1,7 @@
-const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// "instant" renders the rest of the session at once: reduced motion, or the visitor skipped.
+let instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (id) => document.getElementById(id);
-const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
+const sleep = (ms) => new Promise((r) => setTimeout(r, instant ? 0 : ms));
 
 function el(tag, cls, text) {
   const n = document.createElement(tag);
@@ -80,7 +81,14 @@ function paint(node, str) {
   if (i < str.length) node.append(str.slice(i));
 }
 
-const log = $("log"), scroll = $("scroll"), draft = $("draft"), spinner = $("spinner"), hint = $("hint");
+const log = $("log"), scroll = $("scroll"), draft = $("draft"), spinner = $("spinner"), tab = $("tab"), skipBtn = $("skip");
+
+function skip() {
+  instant = true;
+  skipBtn.hidden = true;
+}
+skipBtn.addEventListener("click", skip);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") skip(); });
 const follow = () => { scroll.scrollTop = scroll.scrollHeight; };
 
 const FRAMES = "·✢✳✶✻✽✻✶✳✢";
@@ -103,12 +111,18 @@ function stopSpin() {
   spinner.replaceChildren();
 }
 
-async function typeInto(text) {
-  for (let i = 1; i <= text.length; i++) {
-    paint(draft, text.slice(0, i));
-    await sleep(75);
-  }
-  await sleep(450);
+// Show the question as a grey suggestion, "press" tab to accept it, then submit.
+async function suggest(text) {
+  paint(draft, text);
+  draft.classList.add("ghost");
+  tab.hidden = false;
+  await sleep(650);
+  tab.classList.add("pressed");
+  draft.classList.remove("ghost");
+  await sleep(300);
+  tab.hidden = true;
+  tab.classList.remove("pressed");
+  await sleep(200);
   draft.textContent = "";
 }
 
@@ -155,9 +169,10 @@ async function streamAnswer(ex, blocks) {
       queue.push([node, text]);
     }
   }
-  if (reduceMotion) { queue.forEach(([n, t]) => (n.textContent = t)); return; }
   for (const [node, text] of queue) {
+    if (instant) { node.textContent = text; continue; }
     for (let i = 1; i <= text.length; i++) {
+      if (instant) { node.textContent = text; break; }
       node.textContent = text.slice(0, i);
       if (i % 3 === 0 || i === text.length) { follow(); await sleep(36); }
     }
@@ -167,7 +182,7 @@ async function streamAnswer(ex, blocks) {
 async function run() {
   await sleep(700);
   for (const step of SESSION) {
-    if (!reduceMotion) await typeInto(step.q);
+    if (!instant) await suggest(step.q);
     const ex = el("div", "ex");
     const user = el("div", "user");
     const q = el("span", "q");
@@ -177,7 +192,7 @@ async function run() {
     log.append(ex);
     follow();
 
-    const started = reduceMotion ? 0 : spin(step.verb);
+    const started = instant ? 0 : spin(step.verb);
     await sleep(700);
     for (const tool of step.tools) {
       await runTool(ex, tool);
@@ -187,12 +202,13 @@ async function run() {
     stopSpin();
     const secs = Math.max(1, Math.round((performance.now() - started) / 1000));
     const done = el("div", "row done");
-    done.append(el("span", null, "✻"), el("span", null, `${step.past} for ${reduceMotion ? 1 : secs}s · done ${clock}`));
+    done.append(el("span", null, "✻"), el("span", null, `${step.past} for ${started ? secs : 1}s · done ${clock}`));
     ex.append(done);
     follow();
     await sleep(900);
   }
-  hint.hidden = false;
+  skipBtn.hidden = true;
+  follow();
 }
 run();
 
