@@ -1,237 +1,154 @@
-// "instant" renders the rest of the session at once: reduced motion, or the visitor skipped.
-let instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const $ = (id) => document.getElementById(id);
-const sleep = (ms) => new Promise((r) => setTimeout(r, instant ? 0 : ms));
+// Reveals, the nav's current section, and the sky over Almaty.
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const html = document.documentElement;
+html.classList.add("ready");
 
-function el(tag, cls, text) {
-  const n = document.createElement(tag);
-  if (cls) n.className = cls;
-  if (text != null) n.textContent = text;
-  return n;
-}
+// Hero intro once the font is in, so nothing reflows mid animation. The land joins it
+// once land.js has painted the first view; after 5s the rest goes on without it.
+Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 600))]).then(() =>
+  requestAnimationFrame(() => html.classList.add("intro"))
+);
+setTimeout(() => html.classList.add("drawn"), 5000);
 
-// Clock (Almaty, UTC+5)
-let clock = "--:--";
-function tick() {
-  const d = new Date(Date.now() + 5 * 3600 * 1000);
-  clock = String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0");
-  $("clock").textContent = clock;
-}
-tick();
-setInterval(tick, 30000);
-
-// The session. Answers are segments: [kind, text, href?] with kind t(ext) b(old) c(ode) a(link).
-const SESSION = [
-  {
-    q: "who is emir? make no mistakes",
-    verb: "Remembering", past: "Cogitated",
-    tools: [["Read", "~/about.md", ["Read 3 lines"]]],
-    blocks: [
-      ["h", [["t", "Emir Amanbekov"]]],
-      ["p", [["t", "Software engineer based in "], ["b", "Almaty, Kazakhstan"], ["t", ". Also goes by "], ["c", "progremir"], ["t", "."]]],
-    ],
+// Sections rise in once as they enter the viewport, children 80ms apart in reading order.
+const groups = $$("[data-group]");
+const seen = new IntersectionObserver(
+  (entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add("in");
+      seen.unobserve(e.target);
+    }
   },
-  {
-    q: "where has he worked. be concise, no yapping",
-    verb: "Grepping", past: "Grepped",
-    tools: [
-      ["Bash", "ls work/", ["b12/  jo-solutions/  kyohealth/"]],
-      ["Read", "work/jo-solutions/README.md", ["Read 4 lines"]],
-    ],
-    blocks: [
-      ["h", [["t", "Work"]]],
-      ["li", [["b", "Jo Solutions"], ["t", " — Software Engineer, "], ["c", "2025–now"], ["t", " "], ["a", "jo.xyz", "https://www.jo.xyz"]]],
-      ["li", [["b", "KyoHealth"], ["t", " — Founding Engineer, "], ["c", "2023–2025"], ["t", " "], ["a", "kyohealth.ai", "https://www.kyohealth.ai"]]],
-      ["li", [["b", "B12"], ["t", " — Software Engineer, "], ["c", "2019–2023"], ["t", " "], ["a", "b12.io", "https://www.b12.io"]]],
-    ],
-  },
-  {
-    q: "how do i reach him?? ultrathink",
-    verb: "Looking up", past: "Looked up",
-    tools: [
-      ["Grep", 'pattern: "progremir", path: "~/links"', ["Found 4 matches"]],
-      ["Bash", "cat ~/links/*.url | head -2", ["https://github.com/progremir", "https://twitter.com/progremir"], 2],
-    ],
-    blocks: [
-      ["h", [["t", "Socials"]]],
-      ["li", [["a", "github.com/progremir", "https://github.com/progremir"]]],
-      ["li", [["a", "x.com/progremir", "https://twitter.com/progremir"]]],
-      ["li", [["a", "instagram.com/progremir", "https://instagram.com/progremir"]]],
-      ["li", [["a", "linkedin.com/in/progremir", "https://linkedin.com/in/progremir"]]],
-    ],
-  },
-];
-
-const RAINBOW = ["#e5737c", "#e9a06b", "#e5c96c", "#9fcb7a", "#6fc3b8", "#6aa9e3", "#8e95e6", "#b18ae0", "#d987c7", "#e57d9f"];
-
-// Render text into a node, colouring the "ultrathink" keyword letter by letter.
-function paint(node, str) {
-  node.textContent = "";
-  const re = /ultrathink/gi;
-  let i = 0, m;
-  while ((m = re.exec(str))) {
-    if (m.index > i) node.append(str.slice(i, m.index));
-    [...m[0]].forEach((ch, k) => {
-      const s = el("span", null, ch);
-      s.style.color = RAINBOW[k];
-      node.append(s);
-    });
-    i = m.index + m[0].length;
-  }
-  if (i < str.length) node.append(str.slice(i));
+  { threshold: 0.2 }
+);
+for (const g of groups) {
+  $$("[data-reveal]", g).forEach((n, i) => n.style.setProperty("--d", `${i * 80}ms`));
+  seen.observe(g);
 }
 
-const log = $("log"), scroll = $("scroll"), draft = $("draft"), spinner = $("spinner"), tab = $("tab"), skipBtn = $("skip");
-
-function skip() {
-  instant = true;
-  skipBtn.hidden = true;
-}
-skipBtn.addEventListener("click", skip);
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") skip(); });
-const follow = () => { scroll.scrollTop = scroll.scrollHeight; };
-
-const FRAMES = "·✢✳✶✻✽✻✶✳✢";
-let spinTimer;
-function spin(verb) {
-  const start = performance.now();
-  spinner.replaceChildren(el("span", "glyph"), el("span", null, verb + "…"), el("span", "meta"));
-  const [glyph, , meta] = spinner.children;
-  const update = () => {
-    const e = performance.now() - start;
-    glyph.textContent = FRAMES[Math.floor(e / 110) % FRAMES.length];
-    meta.textContent = `(${(e / 1000).toFixed(1)}s · ↓ ${Math.floor(e / 35)} tokens · esc to interrupt)`;
-  };
-  update();
-  spinTimer = setInterval(update, 60);
-  return start;
-}
-function stopSpin() {
-  clearInterval(spinTimer);
-  spinner.replaceChildren();
-}
-
-// Show the question as a grey suggestion, "press" tab to accept it, then submit.
-async function suggest(text) {
-  paint(draft, text);
-  draft.classList.add("ghost");
-  tab.hidden = false;
-  await sleep(650);
-  tab.classList.add("pressed");
-  draft.classList.remove("ghost");
-  await sleep(300);
-  tab.hidden = true;
-  tab.classList.remove("pressed");
-  await sleep(200);
-  draft.textContent = "";
-}
-
-async function runTool(ex, [name, arg, lines, more]) {
-  const box = el("div", "tool running");
-  const head = el("div", "row");
-  const title = el("span");
-  title.append(el("b", null, name), el("span", "arg", `(${arg})`));
-  head.append(el("span", "dot", "●"), title);
-  const running = el("div", "out");
-  running.append(el("span", null, "⎿"), el("span", null, "Running…"));
-  box.append(head, running);
-  ex.append(box);
-  follow();
-  await sleep(450);
-  box.classList.remove("running");
-  running.remove();
-  lines.forEach((text, i) => {
-    const row = el("div", "out");
-    row.append(el("span", null, i ? "" : "⎿"), el("span", null, text));
-    box.append(row);
-  });
-  if (more) box.append(el("div", "more", `… +${more} lines (ctrl+o to expand)`));
-  follow();
-}
-
-async function streamAnswer(ex, blocks) {
-  const row = el("div", "row");
-  const body = el("div", "answer");
-  row.append(el("span", null, "●"), body);
-  ex.append(row);
-  // Build every node empty, then fill characters in order.
-  const queue = [];
-  for (const [kind, segs] of blocks) {
-    const block = el("div", "blk-" + kind);
-    body.append(block);
-    for (const [type, text, href] of segs) {
-      let node;
-      if (type === "b") node = el("b");
-      else if (type === "c") node = el("code");
-      else if (type === "a") { node = el("a"); node.href = href; }
-      else node = el("span");
-      block.append(node);
-      queue.push([node, text]);
-    }
-  }
-  for (const [node, text] of queue) {
-    if (instant) { node.textContent = text; continue; }
-    for (let i = 1; i <= text.length; i++) {
-      if (instant) { node.textContent = text; break; }
-      node.textContent = text.slice(0, i);
-      if (i % 3 === 0 || i === text.length) { follow(); await sleep(36); }
-    }
+// Nav: mark the section under the top 40% of the viewport as current. A clicked
+// link stays marked until the reader scrolls on their own, since the page may be
+// too short to bring its section all the way up. Only on the page the links point into.
+const navLinks = $$(".nav a");
+const marks = navLinks.map((a) => a.getAttribute("href").startsWith("#") && $(a.hash));
+const spy = marks.every(Boolean);
+let current = 0;
+let pinned = -1;
+let ticking = false;
+function frame() {
+  ticking = false;
+  if (!spy) return;
+  const vh = innerHeight;
+  let idx = 0;
+  marks.forEach((m, i) => { if (m.getBoundingClientRect().top <= vh * 0.4) idx = i; });
+  if (vh + scrollY >= html.scrollHeight - 2) idx = marks.length - 1;
+  if (pinned >= 0) idx = pinned;
+  if (idx !== current) {
+    navLinks[current].removeAttribute("aria-current");
+    navLinks[idx].setAttribute("aria-current", "true");
+    current = idx;
   }
 }
-
-async function run() {
-  await sleep(700);
-  for (const step of SESSION) {
-    if (!instant) await suggest(step.q);
-    const ex = el("div", "ex");
-    const user = el("div", "user");
-    const q = el("span", "q");
-    paint(q, step.q);
-    user.append(el("span", null, "❯"), q);
-    ex.append(user);
-    log.append(ex);
-    follow();
-
-    const started = instant ? 0 : spin(step.verb);
-    await sleep(700);
-    for (const tool of step.tools) {
-      await runTool(ex, tool);
-      await sleep(300);
-    }
-    await streamAnswer(ex, step.blocks);
-    stopSpin();
-    const secs = Math.max(1, Math.round((performance.now() - started) / 1000));
-    const done = el("div", "row done");
-    done.append(el("span", null, "✻"), el("span", null, `${step.past} for ${started ? secs : 1}s · done ${clock}`));
-    ex.append(done);
-    follow();
-    await sleep(900);
+function onScroll() {
+  if (!ticking) {
+    ticking = true;
+    requestAnimationFrame(frame);
   }
-  skipBtn.hidden = true;
-  follow();
 }
-run();
+if (spy) {
+  navLinks.forEach((a, i) => a.addEventListener("click", () => { pinned = i; frame(); }));
+  for (const type of ["wheel", "touchstart", "keydown"]) {
+    addEventListener(type, () => { pinned = -1; onScroll(); }, { passive: true });
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  frame();
+}
 
-// Terminal pointer: a block that follows the mouse, a labelled tag on links
-if (matchMedia("(pointer: fine)").matches) {
-  const caret = $("caret");
-  let idle;
-  document.documentElement.classList.add("has-caret");
-  document.addEventListener("mousemove", (e) => {
-    const link = e.target.closest && e.target.closest("a, button");
-    let x = e.clientX - 1, y = e.clientY - 2;
-    if (link) {
-      caret.dataset.label = "↗ open";
-      x = e.clientX + 12;
-      y = e.clientY + 10;
-    }
-    caret.style.transform = `translate(${x}px, ${y}px)`;
-    caret.className = "caret on" + (link ? " link" : "");
-    clearTimeout(idle);
-    idle = setTimeout(() => caret.classList.add("idle"), 500);
-  });
-  document.addEventListener("mouseleave", () => {
-    caret.className = "caret";
-    clearTimeout(idle);
-  });
+// Sky. Low precision positions (better than a degree), plenty for a drawing.
+const RAD = Math.PI / 180;
+const LAT = 43.25 * RAD; // Almaty
+const LON = 76.94;
+const OBL = 23.4397 * RAD;
+const EAST = 75, WEST = 285; // the sun and moon cross the whole width, east on the left
+const HORIZON = 0.3; // share of the land's height where the far crests meet the sky
+
+function horizontal(ra, dec, lst) {
+  const h = lst - ra;
+  const alt = Math.asin(Math.sin(LAT) * Math.sin(dec) + Math.cos(LAT) * Math.cos(dec) * Math.cos(h));
+  const az = Math.atan2(Math.sin(h), Math.cos(h) * Math.sin(LAT) - Math.tan(dec) * Math.cos(LAT)) + Math.PI;
+  return { alt: alt / RAD, az: az / RAD };
 }
+
+function skyAt(t) {
+  const d = t / 86400000 - 10957.5; // days since J2000
+  const lst = (280.16 + 360.9856235 * d + LON) * RAD;
+  const m = (357.5291 + 0.98560028 * d) * RAD;
+  const ls = m + (1.9148 * Math.sin(m) + 0.02 * Math.sin(2 * m) + 0.0003 * Math.sin(3 * m) + 282.9372) * RAD;
+  const sun = horizontal(Math.atan2(Math.sin(ls) * Math.cos(OBL), Math.cos(ls)), Math.asin(Math.sin(ls) * Math.sin(OBL)), lst);
+  const lm = (218.316 + 13.176396 * d + 6.289 * Math.sin((134.963 + 13.064993 * d) * RAD)) * RAD;
+  const bm = 5.128 * Math.sin((93.272 + 13.22935 * d) * RAD) * RAD;
+  const moon = horizontal(
+    Math.atan2(Math.sin(lm) * Math.cos(OBL) - Math.tan(bm) * Math.sin(OBL), Math.cos(lm)),
+    Math.asin(Math.sin(bm) * Math.cos(OBL) + Math.cos(bm) * Math.sin(OBL) * Math.sin(lm)),
+    lst
+  );
+  moon.lit = (1 - Math.cos(bm) * Math.cos(lm - ls)) / 2;
+  moon.waxing = Math.sin(lm - ls) > 0;
+  return { sun, moon };
+}
+
+// Lit part of the moon, in a 12 unit box: the bright limb plus the terminator ellipse.
+function moonPath(k, waxing) {
+  const rx = (Math.abs(1 - 2 * k) * 6).toFixed(2);
+  const term = (k < 0.5) === waxing ? 0 : 1;
+  return `M6 0A6 6 0 0 ${waxing ? 1 : 0} 6 12A${rx} 6 0 0 ${term} 6 0Z`;
+}
+
+const stage = $(".sky-stage");
+const orb = $("#orb");
+const orbLit = $("#orb-lit");
+const clock = $("#clock");
+
+// The paper theme has the sun and the night theme the moon. Each is where it really is
+// over Almaty while it's up, and rests here while it's below the horizon.
+const paper = matchMedia("(prefers-color-scheme: light)");
+const REST = { sun: { az: 215, alt: 24 }, moon: { az: 135, alt: 30 } };
+
+// The sun or moon, behind the land: it sets behind the far crests, and peaks hide it for
+// a while as they pass.
+function placeSky() {
+  const now = Date.now();
+  const local = new Date(now + 5 * 3600000); // Almaty, UTC+5
+  clock.textContent = clock.dateTime =
+    String(local.getUTCHours()).padStart(2, "0") + ":" + String(local.getUTCMinutes()).padStart(2, "0");
+
+  const { sun, moon } = skyAt(now);
+  const day = paper.matches;
+  const real = day ? sun : moon;
+  const body = real.alt > -1 ? real : day ? REST.sun : REST.moon;
+  orb.classList.toggle("moon", !day);
+  // The moon's phase, but never thinner than a clear crescent, so there is a moon to see
+  if (!day) orbLit.setAttribute("d", moonPath(Math.max(0.25, moon.lit), moon.waxing));
+
+  // Low bodies climb quickly, so even a winter sun clears the peaks at noon. Up high,
+  // the halo stays clear of the top edge.
+  const s = stage.getBoundingClientRect();
+  const top = s.height * HORIZON;
+  const high = Math.min(top, orb.offsetHeight * 0.4);
+  const x = ((body.az - EAST) / (WEST - EAST)) * s.width;
+  const y = top - (top - high) * Math.pow(Math.max(0, body.alt) / 90, 0.45) - Math.min(0, body.alt) * 4;
+  orb.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+  orb.classList.add("on");
+}
+if (orb) {
+  placeSky();
+  setInterval(placeSky, 30000);
+  paper.addEventListener("change", placeSky);
+  // Rest the halo while the sky is off screen.
+  new IntersectionObserver(([e]) => orb.classList.toggle("paused", !e.isIntersecting)).observe(stage);
+}
+addEventListener("resize", () => requestAnimationFrame(() => { if (orb) placeSky(); frame(); }));
+
+for (const n of $$("[data-year]")) n.textContent = new Date().getFullYear();
