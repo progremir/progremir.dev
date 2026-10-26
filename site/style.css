@@ -144,7 +144,7 @@ a { color: inherit; text-decoration: none; }
 .name {
   width: fit-content;
   padding-bottom: 4px;
-  font-size: 72px; line-height: 72px; font-weight: 600;
+  font-size: 48px; line-height: 48px; font-weight: 600;
   letter-spacing: -0.025em;
   background: linear-gradient(90deg, var(--grad-from), var(--grad-to));
   -webkit-background-clip: text;
@@ -325,7 +325,6 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   @supports (height: 1svh) {
     :root { --land: clamp(240px, min(56vw, 44svh), 640px); }
   }
-  .name { font-size: 60px; line-height: 60px; }
 }
 
 /* Phone */
@@ -336,7 +335,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   }
   .hero { padding-top: 80px; }
   .hero-copy { padding-block: 32px 48px; }
-  .name { font-size: 48px; line-height: 48px; }
+  .name { font-size: 36px; line-height: 40px; }
   .lead { font-size: 18px; line-height: 28px; }
   .cta { margin-top: 32px; }
   .section { padding-block: 80px; }
