@@ -1,16 +1,20 @@
-"""Trace the skyline south of Almaty and print the SVG paths used on the site.
+"""Trace the mountains south of Almaty and print the SVG used on the site.
 
-The ridge on the homepage is the real horizon seen from Republic Square,
-looking south (azimuth 92° to 268°). Elevation comes from SRTM data served as
-AWS Terrain Tiles. Each layer keeps the highest elevation angle within a
-distance band (6 km, 12 km, 80 km), which is what gives the drawing depth.
+The ridge on the homepage is the real horizon seen from the north of the city,
+looking south across the Ile Alatau (azimuth 120° to 180°). Elevation comes
+from SRTM data served as AWS Terrain Tiles. Each layer keeps the highest
+elevation angle within a distance band: the foothills (20 km), the front range
+(30 km) and the snowy crest behind it. Like most mountain panoramas, the
+drawing is three times taller than true scale so the peaks read as they do
+in person.
 
     pip install numpy pillow
     python3 scripts/skyline.py
 
-Paste each printed d attribute into the matching .layer path in
-site/index.html and site/404.html. Path units are degrees: x is azimuth,
-y is the negative elevation angle, matching viewBox="92 -10 176 11".
+Copy the printed viewBox and paths into the three .layer svgs in
+site/index.html and site/404.html. Units are degrees: x is azimuth, y is minus
+the elevation angle. Set --relief in style.css to RELIEF * height / width of
+the viewBox.
 """
 import math
 import os
@@ -20,37 +24,40 @@ import urllib.request
 import numpy as np
 from PIL import Image
 
-LAT0, LON0 = 43.2385, 76.9453  # Republic Square, Almaty
-EYE = 25.0                      # metres above the ground
-Z = 11                          # tile zoom, about 55 m per pixel here
+LAT0, LON0, EYE = 43.400, 76.950, 25.0  # north of the city, a few floors up
+Z = 12                                  # tile zoom, about 28 m per pixel here
 R_EARTH, REFRACTION = 6371000.0, 0.13
-AZ_MIN, AZ_MAX, AZ_STEP = 92.0, 268.0, 0.1
-AZ_PAD = 12.0                   # traced beyond the view so smoothing has neighbours
-BANDS = {"near": 6000, "mid": 12000, "far": 80000}
-TOLERANCE = 0.05                # simplification, in exaggerated degrees
+AZ_FROM, AZ_TO, AZ_STEP = 110.0, 250.0, 0.05
+WINDOW = (120.0, 180.0)
+RELIEF = 3.0                            # vertical exaggeration
+D_MAX = 75000.0
+LAYERS = {"near": 20000, "mid": 30000, "far": D_MAX}
+TOLERANCE = 0.45                        # simplification, in pixels at 1440 wide
 CACHE = os.path.join(tempfile.gettempdir(), "terrain-tiles")
 
 
 def tile_xy(lat, lon):
     n = 2 ** Z
-    return (lon + 180) / 360 * n, (1 - math.asinh(math.tan(math.radians(lat))) / math.pi) / 2 * n
+    return (lon + 180) / 360 * n, (1 - np.arcsinh(np.tan(np.radians(lat))) / np.pi) / 2 * n
 
 
 def destination(az, d):
-    p1, l1, th, dr = math.radians(LAT0), math.radians(LON0), math.radians(az), d / R_EARTH
-    p2 = math.asin(math.sin(p1) * math.cos(dr) + math.cos(p1) * math.sin(dr) * math.cos(th))
-    l2 = l1 + math.atan2(math.sin(th) * math.sin(dr) * math.cos(p1), math.cos(dr) - math.sin(p1) * math.sin(p2))
-    return math.degrees(p2), math.degrees(l2)
+    p1, l1 = math.radians(LAT0), math.radians(LON0)
+    th, dr = np.radians(az), d / R_EARTH
+    p2 = np.arcsin(np.sin(p1) * np.cos(dr) + np.cos(p1) * np.sin(dr) * np.cos(th))
+    l2 = l1 + np.arctan2(np.sin(th) * np.sin(dr) * np.cos(p1), np.cos(dr) - np.sin(p1) * np.sin(p2))
+    return np.degrees(p2), np.degrees(l2)
 
 
 def load_elevation():
-    far = max(BANDS.values())
-    corners = [destination(a, far) for a in range(80, 281, 5)] + [(LAT0 + 0.05, LON0)]
-    x0, y0 = tile_xy(max(c[0] for c in corners), min(c[1] for c in corners))
-    x1, y1 = tile_xy(min(c[0] for c in corners), max(c[1] for c in corners))
+    edge = np.arange(AZ_FROM - 5, AZ_TO + 5.1, 2.5)
+    lat, lon = destination(edge, D_MAX)
+    lat, lon = np.append(lat, LAT0 + 0.02), np.append(lon, LON0)
+    x0, y0 = tile_xy(lat.max(), lon.min())
+    x1, y1 = tile_xy(lat.min(), lon.max())
     tx0, ty0, tx1, ty1 = int(x0), int(y0), int(x1), int(y1)
     os.makedirs(CACHE, exist_ok=True)
-    grid = np.zeros(((ty1 - ty0 + 1) * 256, (tx1 - tx0 + 1) * 256), dtype=np.float32)
+    grid = np.zeros(((ty1 - ty0 + 1) * 256, (tx1 - tx0 + 1) * 256), np.float32)
     for ty in range(ty0, ty1 + 1):
         for tx in range(tx0, tx1 + 1):
             path = os.path.join(CACHE, f"{Z}_{tx}_{ty}.png")
@@ -64,7 +71,7 @@ def load_elevation():
     def sample(lat, lon):
         x, y = tile_xy(lat, lon)
         px, py = (x - tx0) * 256 - 0.5, (y - ty0) * 256 - 0.5
-        ix, iy = int(px), int(py)
+        ix, iy = np.floor(px).astype(int), np.floor(py).astype(int)
         fx, fy = px - ix, py - iy
         top = grid[iy, ix] * (1 - fx) + grid[iy, ix + 1] * fx
         bottom = grid[iy + 1, ix] * (1 - fx) + grid[iy + 1, ix + 1] * fx
@@ -75,22 +82,17 @@ def load_elevation():
 
 def horizon(sample):
     """Highest elevation angle per azimuth, cumulative over each distance band."""
-    h0 = sample(LAT0, LON0) + EYE
-    limits = sorted(BANDS.values())
-    out = {limit: [] for limit in limits}
-    for az in np.arange(AZ_MIN - AZ_PAD, AZ_MAX + AZ_PAD + 1e-9, AZ_STEP):
-        best, d, i = -90.0, 150.0, 0
-        while d <= limits[-1]:
-            lat, lon = destination(az, d)
-            drop = d * d / (2 * R_EARTH) * (1 - REFRACTION)
-            best = max(best, math.degrees(math.atan2(sample(lat, lon) - h0 - drop, d)))
-            while i < len(limits) and d >= limits[i]:
-                out[limits[i]].append(round(best, 4))
-                i += 1
-            d += 30.0 if d < 5000 else 60.0 if d < 20000 else 100.0
-        for limit in limits[i:]:
-            out[limit].append(round(best, 4))
-    return {name: np.array(out[limit]) for name, limit in BANDS.items()}
+    h0 = float(sample(np.array([LAT0]), np.array([LON0]))[0]) + EYE
+    d = np.concatenate([np.arange(150, 5000, 12.0), np.arange(5000, 20000, 20.0), np.arange(20000, D_MAX + 1, 35.0)])
+    drop = d * d / (2 * R_EARTH) * (1 - REFRACTION)
+    azs = np.arange(AZ_FROM, AZ_TO + 1e-9, AZ_STEP)
+    out = {name: np.zeros(len(azs)) for name in LAYERS}
+    for i, az in enumerate(azs):
+        lat, lon = destination(np.full_like(d, az), d)
+        highest = np.maximum.accumulate(np.degrees(np.arctan2(sample(lat, lon) - h0 - drop, d)))
+        for name, limit in LAYERS.items():
+            out[name][i] = highest[np.searchsorted(d, limit, side="right") - 1]
+    return azs, {name: v.round(4) for name, v in out.items()}
 
 
 def simplify(pts, eps):
@@ -118,12 +120,13 @@ def num(v):
     return s.replace("0.", ".", 1) if s.startswith("0.") else s.replace("-0.", "-.", 1)
 
 
-def path(profile):
-    smooth = np.convolve(np.pad(profile, 1, mode="edge"), [0.25, 0.5, 0.25], mode="valid")
-    az = AZ_MIN - AZ_PAD + np.arange(len(smooth)) * AZ_STEP
-    view = (az >= AZ_MIN - 1e-9) & (az <= AZ_MAX + 1e-9)
-    pts = simplify(np.column_stack([az[view], -smooth[view] * 2.2]), TOLERANCE)  # judge y as it renders
-    pts[:, 1] /= 2.2
+def path(az, profile, below):
+    lo, hi = WINDOW
+    sx = 1440 / (hi - lo)
+    sy = sx * RELIEF
+    pts = simplify(np.column_stack([az * sx, -profile * sy]), TOLERANCE)  # judged as it renders
+    pts[:, 0] /= sx
+    pts[:, 1] /= sy
     r = np.round(pts * 100).astype(int)
     out = ""
     for v in (np.diff(r, axis=0) / 100).flatten():
@@ -133,9 +136,16 @@ def path(profile):
             out += " "
         out += s
     # Start and end beyond the view, then close below it, so only the ridge is stroked.
-    return f"M80 {num(r[0][1] / 100)}H{num(r[0][0] / 100)}l{out}H280V5H80Z"
+    return f"M{num(lo - 10)} {num(r[0][1] / 100)}H{num(r[0][0] / 100)}l{out}H{num(hi + 10)}V{num(below)}H{num(lo - 10)}Z"
 
 
 if __name__ == "__main__":
-    for name, profile in horizon(load_elevation()).items():
-        print(f"{name}: {path(profile)}\n")
+    azs, layers = horizon(load_elevation())
+    azs = AZ_FROM + np.arange(len(azs)) * AZ_STEP  # exact grid for drawing
+    lo, hi = WINDOW
+    view = (azs >= lo - 1e-9) & (azs <= hi + 1e-9)
+    top = layers["far"][view].max() + 0.15
+    bottom = min(v[view].min() for v in layers.values()) - 0.15
+    print(f'viewBox="{num(lo)} {num(-top)} {num(hi - lo)} {num(top - bottom)}"\n')
+    for name in ("far", "mid", "near"):
+        print(f"{name}: {path(azs[view], layers[name][view], -bottom + 5)}\n")

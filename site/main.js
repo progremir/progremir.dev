@@ -1,15 +1,8 @@
-// Reveals, the tagline, the nav's current section, and the sky over Almaty.
+// Reveals, the nav's current section, and the sky over Almaty.
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const html = document.documentElement;
 html.classList.add("ready");
-
-function el(tag, cls, text) {
-  const n = document.createElement(tag);
-  if (cls) n.className = cls;
-  if (text != null) n.textContent = text;
-  return n;
-}
 
 // Hero intro once the font is in, so nothing reflows mid animation.
 Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 600))]).then(() =>
@@ -33,48 +26,26 @@ for (const g of groups) {
   seen.observe(g);
 }
 
-// Tagline: split into words that light up one at a time while it crosses the reading line.
-const tagline = $("[data-words]");
-let words = [];
-let lit = 0;
-if (tagline) {
-  const text = tagline.textContent.replace(/\s+/g, " ").trim();
-  const shown = el("span");
-  shown.setAttribute("aria-hidden", "true");
-  shown.append(...tagline.childNodes);
-  const walk = document.createTreeWalker(shown, NodeFilter.SHOW_TEXT);
-  const nodes = [];
-  while (walk.nextNode()) nodes.push(walk.currentNode);
-  for (const node of nodes) {
-    const parts = node.textContent.split(/(\s+)/).filter(Boolean);
-    node.replaceWith(...parts.map((p) => (/\s/.test(p) ? " " : el("span", "w", p))));
-  }
-  tagline.replaceChildren(el("span", "sr-only", text), shown);
-  words = $$(".w", tagline);
-}
-
-// Nav: mark the section under the top 40% of the viewport as current.
+// Nav: mark the section under the top 40% of the viewport as current. A clicked
+// link stays marked until the reader scrolls on their own, since the page may be
+// too short to bring its section all the way up.
 const navLinks = $$(".nav a");
 const marks = navLinks.map((a) => $(a.hash));
 let current = 0;
+let pinned = -1;
+navLinks.forEach((a, i) => a.addEventListener("click", () => { pinned = i; frame(); }));
+for (const type of ["wheel", "touchstart", "keydown"]) {
+  addEventListener(type, () => { pinned = -1; onScroll(); }, { passive: true });
+}
 
 let ticking = false;
 function frame() {
   ticking = false;
   const vh = innerHeight;
-  if (lit < words.length) {
-    // From the tagline's top reaching 85% of the viewport to its bottom reaching 55%,
-    // or the end of the page when tall screens cannot scroll that far.
-    const r = tagline.getBoundingClientRect();
-    const start = r.top + scrollY - vh * 0.85;
-    const end = Math.min(r.bottom + scrollY - vh * 0.55, html.scrollHeight - vh);
-    const p = end > start ? (scrollY - start) / (end - start) : 1;
-    const n = Math.min(words.length, Math.floor(p * (words.length + 1)));
-    while (lit < n) words[lit++].classList.add("on");
-  }
   let idx = 0;
   marks.forEach((m, i) => { if (m.getBoundingClientRect().top <= vh * 0.4) idx = i; });
   if (vh + scrollY >= html.scrollHeight - 2) idx = marks.length - 1;
+  if (pinned >= 0) idx = pinned;
   if (idx !== current) {
     navLinks[current].removeAttribute("aria-current");
     navLinks[idx].setAttribute("aria-current", "true");
@@ -92,10 +63,10 @@ frame();
 
 // Sky. Low precision positions (better than a degree), plenty for a drawing.
 const RAD = Math.PI / 180;
-const LAT = 43.2385 * RAD; // Republic Square, Almaty
-const LON = 76.9453;
+const LAT = 43.25 * RAD; // Almaty
+const LON = 76.94;
 const OBL = 23.4397 * RAD;
-const AZ0 = 92, AZ1 = 268, TOP = 10, BOTTOM = -1; // must match the ridge viewBox
+const EAST = 75, WEST = 285; // the sun and moon cross the whole width, east on the left
 
 function horizontal(ra, dec, lst) {
   const h = lst - ra;
@@ -135,6 +106,10 @@ const orb = $("#orb");
 const orbLit = $("#orb-lit");
 const clock = $("#clock");
 const SUN = orbLit.getAttribute("d");
+// The ridge viewBox spans elevation angles from TOP down to BOTTOM (y is minus the angle).
+const view = ridge.viewBox.baseVal;
+const TOP = -view.y;
+const BOTTOM = -(view.y + view.height);
 
 function placeSky() {
   const now = Date.now();
@@ -149,12 +124,12 @@ function placeSky() {
   orb.classList.toggle("moon", body === moon);
   orbLit.setAttribute("d", body === moon ? moonPath(moon.lit, moon.waxing) : SUN);
 
-  // Same scale as the ridge up to 10°, so it sets behind the real peaks.
-  // Above that, 10° to 90° is eased into the sky, stopping 24px short of its top.
+  // Same vertical scale as the ridge while low, so it rises and sets behind the peaks.
+  // Higher up, TOP to 90° is eased into the sky, stopping 24px short of its top.
   const s = stage.getBoundingClientRect();
   const b = ridge.getBoundingClientRect();
   const top = b.top - s.top;
-  const x = b.left - s.left + ((body.az - AZ0) / (AZ1 - AZ0)) * b.width;
+  const x = ((body.az - EAST) / (WEST - EAST)) * s.width;
   const y = body.alt <= TOP
     ? top + ((TOP - body.alt) * b.height) / (TOP - BOTTOM)
     : top - (top - 24) * Math.sin((((body.alt - TOP) / (90 - TOP)) * Math.PI) / 2);

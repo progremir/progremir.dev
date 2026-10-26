@@ -9,17 +9,21 @@ Plain static site in `site/`. No build step.
 
 ## The skyline
 
-The ridge in the hero is the real horizon seen from Republic Square in Almaty,
-looking south, traced from SRTM elevation data (AWS Terrain Tiles). The sun or
-the moon is drawn at its actual position for the current time, computed in the
-browser. To trace the ridge again, for example from another viewpoint:
+The mountains in the hero are the real horizon seen from the north of Almaty,
+looking south across the Ile Alatau, traced from SRTM elevation data (AWS
+Terrain Tiles): the foothills, the front range and the snowy crest behind it,
+drawn three times taller than true scale like most mountain panoramas. The sun
+or the moon is drawn for the current time, computed in the browser, rising and
+setting behind the peaks. To trace the ridge again, for example from another
+viewpoint:
 
 ```sh
 pip install numpy pillow
 python3 scripts/skyline.py
 ```
 
-Then paste the three printed paths into `site/index.html` and `site/404.html`.
+Then paste the printed viewBox and paths into `site/index.html` and
+`site/404.html`.
 
 ## Run locally
 

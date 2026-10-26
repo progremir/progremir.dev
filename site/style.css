@@ -34,16 +34,17 @@
   --io: cubic-bezier(0.65, 0, 0.35, 1);   /* wipes */
 
   --gutter: 24px;
-  --sky: 120px;   /* room above the ridge for a high sun */
-  --ridge: 220px; /* ridge box: 10° at the top, −1° at the bottom */
-  --span: 100%;   /* ridge width; wider than the viewport crops to the south */
+  --sky: 96px;      /* room above the ridge for a high sun */
+  --span: 1;        /* ridge width in viewports; above 1 crops to the middle */
+  --relief: 0.252;  /* ridge height per width: its viewBox, 3 times taller */
+  --ridge: calc(var(--span) * var(--relief) * 100vw);
 }
 
-/* Both follow the width so the relief keeps its shape, capped by the height */
+/* Keep the relief's shape on any width, capped by the height */
 @supports (height: 1svh) {
   :root {
-    --sky: clamp(80px, min(8vw, 14svh), 200px);
-    --ridge: clamp(160px, min(15vw, 27svh), 384px);
+    --sky: clamp(64px, min(7vw, 11svh), 160px);
+    --ridge: min(calc(var(--span) * var(--relief) * 100vw), 38svh);
   }
 }
 
@@ -150,7 +151,7 @@ a { color: inherit; text-decoration: none; }
 .hero-copy {
   flex: 1 0 auto;
   display: flex; flex-direction: column; justify-content: center;
-  padding-block: 48px 64px;
+  padding-block: 32px 40px;
 }
 .name {
   width: fit-content;
@@ -168,7 +169,6 @@ a { color: inherit; text-decoration: none; }
   font-size: 20px; line-height: 28px;
   color: var(--muted);
 }
-.lead span { display: block; }
 .cta { margin-top: 40px; }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -195,7 +195,7 @@ a { color: inherit; text-decoration: none; }
 }
 .layer svg {
   position: absolute; top: 0; left: 50%;
-  width: var(--span); height: 100%;
+  width: calc(var(--span) * 100%); height: 100%;
   translate: -50% 0;
 }
 .layer path {
@@ -239,13 +239,12 @@ a { color: inherit; text-decoration: none; }
 
 /* Sections */
 .section { padding-block: 96px; }
-.section + .statement, .statement + .section { padding-top: 0; }
+.section + .section { padding-top: 0; }
 .label {
   margin-bottom: 24px;
   font-size: 14px; line-height: 20px; font-weight: 500;
   color: var(--faint);
 }
-.intro { margin-bottom: 24px; color: var(--muted); }
 
 .list { margin: 0 -12px; padding: 0; list-style: none; }
 .row {
@@ -264,18 +263,6 @@ a { color: inherit; text-decoration: none; }
 .row:hover .row-go { color: var(--strong); transform: translate(2px, -2px); }
 .row:hover .i-brand { color: var(--strong); }
 .row:active { transform: translateY(1px); }
-
-/* Tagline: words light up one at a time as they cross the reading line */
-.statement { padding-block: 96px; }
-.tagline {
-  font-size: 48px; line-height: 48px; font-weight: 600;
-  letter-spacing: -0.025em;
-  color: var(--strong);
-  text-wrap: balance;
-}
-.tagline .s, .tagline .ln { display: block; }
-.js .tagline .w { opacity: 0.3; transition: opacity 500ms var(--ease); }
-.js .tagline .w.on { opacity: 1; }
 
 /* Footer */
 .footer {
@@ -349,6 +336,9 @@ a { color: inherit; text-decoration: none; }
 
 /* Short screens, such as 1280 × 720 laptops: keep the whole hero in view */
 @media (max-height: 820px) and (min-width: 640px) {
+  @supports (height: 1svh) {
+    :root { --ridge: min(calc(var(--span) * var(--relief) * 100vw), 34svh); }
+  }
   .hero { padding-top: 80px; }
   .hero-copy { padding-block: 24px 32px; }
   .caption { padding-block: 12px 16px; }
@@ -356,22 +346,19 @@ a { color: inherit; text-decoration: none; }
 
 /* Tablet */
 @media (max-width: 1023px) {
-  :root { --ridge: 200px; --sky: 100px; --span: 126%; }
+  :root { --span: 1.25; }
   .name { font-size: 60px; line-height: 60px; }
 }
 
 /* Phone */
 @media (max-width: 639px) {
-  :root { --gutter: 16px; --ridge: 144px; --sky: 80px; --span: 125%; }
+  :root { --gutter: 16px; --span: 2.2; }
   .hero { padding-top: 80px; }
   .hero-copy { padding-block: 32px 48px; }
   .name { font-size: 48px; line-height: 48px; }
   .lead { font-size: 18px; line-height: 28px; }
-  .lead span { display: inline; }
   .cta { margin-top: 32px; }
-  .section, .statement { padding-block: 80px; }
-  .tagline { font-size: 36px; line-height: 40px; }
-  .tagline .ln { display: inline; }
+  .section { padding-block: 80px; }
   .row-job { grid-template-columns: minmax(0, 1fr) auto 16px; grid-template-areas: "title side go" "meta side go"; gap: 0 16px; }
   .row-job .row-title { grid-area: title; }
   .row-job .row-meta { grid-area: meta; }
@@ -383,7 +370,7 @@ a { color: inherit; text-decoration: none; }
 
 /* Short phones */
 @media (max-width: 639px) and (max-height: 700px) {
-  :root { --ridge: 128px; --sky: 64px; }
+  :root { --span: 2; }
   .hero { padding-top: 64px; }
   .hero-copy { padding-block: 24px 32px; }
 }
