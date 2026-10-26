@@ -139,17 +139,16 @@ a { color: inherit; text-decoration: none; }
 .nav a:active { transform: scale(0.98); }
 .nav a[aria-current] { color: var(--strong); background: var(--surface-strong); }
 
-/* Hero */
-.hero {
-  display: flex; flex-direction: column;
-  min-height: 100dvh;
-  padding-top: 96px;
-}
+/* Hero: the name, a line and a quote, centred over the landscape */
+.hero { padding-top: 96px; }
 .hero-copy {
-  flex: 1 0 auto;
-  display: flex; flex-direction: column; justify-content: center;
-  padding-block: 32px 40px;
+  display: flex; flex-direction: column; align-items: center;
+  padding-block: 48px;
+  text-align: center;
 }
+/* The 404 page fills the screen, its land at the bottom */
+.hero-full { display: flex; flex-direction: column; min-height: 100dvh; }
+.hero-full .hero-copy { flex: 1 0 auto; justify-content: center; }
 .name {
   width: fit-content;
   padding-bottom: 4px;
@@ -162,10 +161,20 @@ a { color: inherit; text-decoration: none; }
 }
 .lead {
   max-width: 680px;
-  margin-top: 24px;
+  margin-top: 8px;
   font-size: 20px; line-height: 28px;
   color: var(--muted);
 }
+.quote { max-width: 480px; margin: 32px 0 0; }
+.quote blockquote { margin: 0; }
+.quote p { text-wrap: balance; }
+.quote figcaption {
+  margin-top: 8px;
+  font-size: 16px; line-height: 24px;
+  color: var(--faint);
+}
+.quote a { transition: color 300ms var(--ease); }
+.quote a:hover { color: var(--strong); }
 .cta { margin-top: 40px; }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -318,13 +327,13 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   .intro.drawn .orb-disc::after { animation: none; }
 }
 
-/* Short screens, such as 1280 × 720 laptops: keep the whole hero in view */
-@media (max-height: 820px) and (min-width: 640px) {
+/* Short screens, such as 1280 × 720 and 1536 × 864 laptops: keep the whole hero in view */
+@media (max-height: 880px) and (min-width: 640px) {
   @supports (height: 1svh) {
     :root { --land: clamp(240px, min(31vw, 45svh), 640px); }
   }
   .hero { padding-top: 80px; }
-  .hero-copy { padding-block: 24px 32px; }
+  .hero-copy { padding-block: 32px; }
   .caption { padding-block: 12px 16px; }
 }
 
@@ -343,7 +352,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
     :root { --land: clamp(220px, min(96vw, 46svh), 480px); }
   }
   .hero { padding-top: 80px; }
-  .hero-copy { padding-block: 32px 48px; }
+  .hero-copy { padding-block: 32px 40px; }
   .name { font-size: 30px; line-height: 36px; }
   .lead { font-size: 18px; line-height: 28px; }
   .cta { margin-top: 32px; }
@@ -364,4 +373,5 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   }
   .hero { padding-top: 64px; }
   .hero-copy { padding-block: 24px 32px; }
+  .quote { margin-top: 24px; }
 }
