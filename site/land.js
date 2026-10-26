@@ -58,16 +58,23 @@
     workers[k % workers.length].postMessage({ k, s: px / TW, look, id: pass });
   }
 
-  // Once the first view is in, or painting has failed, the intro goes on
+  // Once every tile in view is in, or painting has failed, the intro goes on
   const done = () => html.classList.add("drawn");
+  function ready() {
+    const x = at();
+    for (let k = Math.floor(x / TW); k * TW < x + land.clientWidth / scale; k++) if (!painted.has(k)) return false;
+    return true;
+  }
 
   function receive({ data: { k, id, bitmap } }) {
-    if (id === pass && k >= first && k < first + slots) {
+    if (id === pass) {
       pending.delete(k);
-      painted.add(k);
-      ctx.clearRect((k - first) * px, 0, px, view.height);
-      ctx.drawImage(bitmap, (k - first) * px, 0, px, view.height);
-      if (painted.size >= span()) done();
+      if (k >= first && k < first + slots) {
+        painted.add(k);
+        ctx.clearRect((k - first) * px, 0, px, view.height);
+        ctx.drawImage(bitmap, (k - first) * px, 0, px, view.height);
+        if (ready()) done();
+      }
     }
     bitmap.close();
   }
@@ -86,7 +93,10 @@
     if (d) {
       const w = view.width - d * px;
       if (d > 0 && w > 0) {
+        // Copy, not draw over: the tiles leave the sky clear, and the old ones would show through
+        ctx.globalCompositeOperation = "copy";
         ctx.drawImage(view, d * px, 0, w, view.height, 0, 0, w, view.height);
+        ctx.globalCompositeOperation = "source-over";
         ctx.clearRect(w, 0, view.width - w, view.height);
         for (const k of painted) if (k < k0) painted.delete(k);
       } else {
