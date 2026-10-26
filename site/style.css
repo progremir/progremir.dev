@@ -23,6 +23,8 @@
   --sun: #e2643f;
   --moon: #ece4d3;
   --moon-dark: #2b2720;
+  --sky-mid: #141a29;  /* the sky behind the hero, bluer down to the horizon */
+  --sky-low: #1d2b48;
   --land-ink: 230, 222, 206;  /* the landscape's ink, paper and tree tone (land.js) */
   --land-paper: #1c1a16;
   --land-leaf: 0.6;
@@ -58,6 +60,8 @@
     --grad-from: #1c1915;
     --grad-to: #6b6255;
     --sun: #c4402b;
+    --sky-mid: #f2dbd3;  /* sunset: blush, then rose at the horizon */
+    --sky-low: #f3c6c0;
     --land-ink: 44, 40, 34;
     --land-paper: #faf6ee;
     --land-leaf: 1;
@@ -187,8 +191,21 @@ a { color: inherit; text-decoration: none; }
 .btn:active { transform: scale(0.98); }
 
 /* Sky: the sun or moon behind an endless ink landscape (land.js), and a caption */
-.sky { margin: 0; }
-html:not(.js) .sky, .no-land .sky-stage { display: none; }
+.hero { isolation: isolate; }
+.sky { position: relative; margin: 0; }
+html:not(.js) .sky, .no-land .sky-stage, .no-land .sky::before { display: none; }
+
+/* A sunset by day and a moonlit night: the page deepens to pink or blue down to the far
+   crests (30% of the land), which hide the rest. Hung from the land, so it meets them on
+   every screen. */
+.sky::before {
+  --up: 280px;
+  content: ""; position: absolute; z-index: -1;
+  top: calc(-1 * var(--up)); left: 0; right: 0;
+  height: calc(var(--up) + var(--land) * 0.6);
+  background: linear-gradient(var(--bg), var(--sky-mid) var(--up), var(--sky-low) calc(var(--up) + var(--land) * 0.3), transparent);
+  pointer-events: none;
+}
 .sky-stage {
   position: relative;
   height: var(--land);
