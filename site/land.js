@@ -12,10 +12,10 @@
 
   const TW = 800, H = 600; // tile width and land height in world units, as in ink.js
   const SPEED = 20; // world units a second
+  const DUSK = 1400; // how long the page takes to turn day or night (style.css), in ms
   const RUN = 64 * TW; // one animation's length; then it starts over from where it is
   const EPOCH = Date.UTC(2026, 0, 1);
   const still = matchMedia("(prefers-reduced-motion: reduce)");
-  const dark = matchMedia("(prefers-color-scheme: dark)");
   // The ink, paper and tree tone come from style.css, so the land matches the page
   const read = () => {
     const css = getComputedStyle(land);
@@ -46,12 +46,19 @@
   let anim = null;
   let pass = 0; // bumped when the size or theme changes, so late paintings are dropped
   let seen = true;
+  let ghost = null; // the land in the theme before, held over it while it is painted again
+  let ghostFirst = 0; // tile at the ghost's left edge
+  let fading = null;
+  let turned = 0; // when the theme last turned
 
   // World x at the left edge of the land right now
   const at = () => base + (anim ? ((anim.currentTime || 0) / 1000) * SPEED : 0);
   // Tiles that can be in view at once
   const span = () => Math.ceil(land.clientWidth / (TW * scale)) + 1;
-  const place = () => (view.style.left = `${(first * TW - base) * scale}px`);
+  const place = () => {
+    view.style.left = `${(first * TW - base) * scale}px`;
+    if (ghost) ghost.style.left = `${(ghostFirst * TW - base) * scale}px`;
+  };
 
   function request(k) {
     pending.add(k);
@@ -73,7 +80,10 @@
         painted.add(k);
         ctx.clearRect((k - first) * px, 0, px, view.height);
         ctx.drawImage(bitmap, (k - first) * px, 0, px, view.height);
-        if (ready()) done();
+        if (ready()) {
+          done();
+          unveil();
+        }
       }
     }
     bitmap.close();
@@ -138,6 +148,7 @@
   function measure() {
     const h = land.clientHeight;
     if (!h) return;
+    drop();
     const d = Math.min(2, devicePixelRatio || 1);
     const p = Math.round((TW * h * d) / H);
     base = at();
@@ -164,6 +175,47 @@
     run();
   }
 
+  // A new theme: paint the land again in its ink, under a copy of the land as it is, which
+  // fades out once every tile in view is in, ending with the page's fade. Turned again mid
+  // fade, the copy takes in the land as it shows at that moment.
+  function relook() {
+    const next = read();
+    if (next.ink === look.ink && next.paper === look.paper && next.leaf === look.leaf) return;
+    look = next;
+    turned = performance.now();
+    if (view.width) {
+      if (ghost) {
+        ctx.globalAlpha = +getComputedStyle(ghost).opacity;
+        ctx.drawImage(ghost, (ghostFirst - first) * px, 0);
+        ctx.globalAlpha = 1;
+        drop();
+      }
+      ghost = document.createElement("canvas");
+      ghost.width = view.width;
+      ghost.height = view.height;
+      ghost.style.width = view.style.width;
+      ghost.getContext("2d").drawImage(view, 0, 0);
+      ghostFirst = first;
+      strip.append(ghost);
+      place();
+    }
+    pass++;
+    pending.clear();
+    painted.clear();
+    fill();
+  }
+  function unveil() {
+    if (!ghost || fading) return;
+    const g = ghost;
+    const duration = Math.max(500, DUSK - (performance.now() - turned));
+    fading = g.animate({ opacity: [1, 0] }, { duration, easing: "cubic-bezier(0.45, 0, 0.55, 1)", fill: "forwards" });
+    fading.onfinish = () => g === ghost && drop();
+  }
+  function drop() {
+    ghost?.remove();
+    ghost = fading = null;
+  }
+
   measure();
   let timer = 0;
   addEventListener("resize", () => {
@@ -171,13 +223,7 @@
     timer = setTimeout(measure, 150);
   });
   still.addEventListener("change", run);
-  dark.addEventListener("change", () => {
-    look = read();
-    pass++;
-    pending.clear();
-    painted.clear();
-    fill();
-  });
+  new MutationObserver(relook).observe(html, { attributeFilter: ["data-theme"] });
   new IntersectionObserver(([e]) => {
     seen = e.isIntersecting;
     sync();

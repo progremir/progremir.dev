@@ -21,6 +21,16 @@ sees the same stretch at the same moment. The light theme has the sun in a pink
 sunset sky and the dark theme the moon in a blue night one, each where it is over
 Almaty while it's up, passing behind the peaks.
 
+## Day and night
+
+The theme follows the device until the visitor picks the other with the sun/moon
+toggle at the end of the nav; the pick is kept in `localStorage` until they pick
+the device's again. An inline script in the `<head>` sets `data-theme` on
+`<html>` before the page shows. In `style.css` every colour is a mix along one
+animated dial, `--day`, so turning the theme fades the whole page through dusk or
+dawn: the sun sinks behind the peaks as the moon rises, and `land.js` repaints the
+land in the new ink under a copy of the old one that fades out.
+
 ## Run locally
 
 ```sh

@@ -1,4 +1,4 @@
-// Reveals, the nav's current section, and the sky over Almaty.
+// Reveals, the nav's current section, day and night, and the sky over Almaty.
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const html = document.documentElement;
@@ -66,6 +66,43 @@ if (spy) {
   frame();
 }
 
+// Day and night. The theme is the device's, unless the visitor picks the other with the
+// toggle; the pick is kept until they pick the device's again. When it turns, style.css
+// fades the page through dusk or dawn, the sun sets as the moon rises (or the other way
+// round), and land.js paints the land again in the new ink.
+const device = matchMedia("(prefers-color-scheme: light)");
+const still = matchMedia("(prefers-reduced-motion: reduce)");
+const toggle = $(".theme");
+const bars = $$('meta[name="theme-color"]').map((m) => [m, m.media.includes("light") ? "light" : "dark"]);
+const deviceTheme = () => (device.matches ? "light" : "dark");
+const isDay = () => html.dataset.theme === "light";
+function picked() {
+  try { return localStorage.getItem("theme"); } catch { return null; }
+}
+function show(theme) {
+  html.dataset.theme = theme;
+  toggle?.setAttribute("aria-pressed", String(theme === "dark"));
+  for (const [m, t] of bars) m.media = t === theme ? "all" : "not all"; // the browser's bar
+}
+function turn(theme) {
+  if (theme === html.dataset.theme) return;
+  show(theme);
+  turnSky();
+}
+show(html.dataset.theme || deviceTheme());
+if (toggle) {
+  toggle.addEventListener("click", () => {
+    const theme = isDay() ? "dark" : "light";
+    try {
+      if (theme === deviceTheme()) localStorage.removeItem("theme");
+      else localStorage.setItem("theme", theme);
+    } catch {}
+    turn(theme);
+  });
+  toggle.hidden = false;
+}
+device.addEventListener("change", () => { if (!picked()) turn(deviceTheme()); });
+
 // Sky. Low precision positions (better than a degree), plenty for a drawing.
 const RAD = Math.PI / 180;
 const LAT = 43.25 * RAD; // Almaty
@@ -108,12 +145,12 @@ function moonPath(k, waxing) {
 
 const stage = $(".sky-stage");
 const orb = $("#orb");
+const disc = $(".orb-disc");
 const orbLit = $("#orb-lit");
 const clock = $("#clock");
 
 // The paper theme has the sun and the night theme the moon. Each is where it really is
 // over Almaty while it's up, and rests here while it's below the horizon.
-const paper = matchMedia("(prefers-color-scheme: light)");
 const REST = { sun: { az: 215, alt: 24 }, moon: { az: 135, alt: 30 } };
 
 // The sun or moon, behind the land: it sets behind the far crests, and peaks hide it for
@@ -125,7 +162,7 @@ function placeSky() {
     String(local.getUTCHours()).padStart(2, "0") + ":" + String(local.getUTCMinutes()).padStart(2, "0");
 
   const { sun, moon } = skyAt(now);
-  const day = paper.matches;
+  const day = isDay();
   const real = day ? sun : moon;
   const body = real.alt > -1 ? real : day ? REST.sun : REST.moon;
   orb.classList.toggle("moon", !day);
@@ -142,10 +179,29 @@ function placeSky() {
   orb.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
   orb.classList.add("on");
 }
+
+// When the theme turns, the sun or moon sinks behind the land, and the other rises in its
+// place. Turned again on the way down, whichever the theme has by then comes up.
+let setting = null;
+let rising = null;
+function turnSky() {
+  if (!orb || setting) return;
+  if (still.matches) return placeSky();
+  const low = { transform: `translateY(${(stage.clientHeight * 0.18).toFixed(1)}px)`, opacity: 0 };
+  const { transform, opacity } = getComputedStyle(disc);
+  rising?.cancel();
+  const set = disc.animate([{ transform, opacity }, low], { duration: 600, easing: "cubic-bezier(0.55, 0, 0.75, 0.3)", fill: "forwards" });
+  setting = set;
+  set.onfinish = () => {
+    setting = null;
+    placeSky();
+    rising = disc.animate([{ offset: 0, ...low }], { duration: 1000, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
+    set.cancel();
+  };
+}
 if (orb) {
   placeSky();
   setInterval(placeSky, 30000);
-  paper.addEventListener("change", placeSky);
   // Rest the halo while the sky is off screen.
   new IntersectionObserver(([e]) => orb.classList.toggle("paused", !e.isIntersecting)).observe(stage);
 }
