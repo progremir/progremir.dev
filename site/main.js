@@ -4,10 +4,12 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const html = document.documentElement;
 html.classList.add("ready");
 
-// Hero intro once the font is in, so nothing reflows mid animation.
+// Hero intro once the font is in, so nothing reflows mid animation. The land joins it
+// once land.js has painted the first view; after 5s the rest goes on without it.
 Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 600))]).then(() =>
   requestAnimationFrame(() => html.classList.add("intro"))
 );
+setTimeout(() => html.classList.add("drawn"), 5000);
 
 // Sections rise in once as they enter the viewport, children 80ms apart in reading order.
 const groups = $$("[data-group]");
@@ -28,19 +30,16 @@ for (const g of groups) {
 
 // Nav: mark the section under the top 40% of the viewport as current. A clicked
 // link stays marked until the reader scrolls on their own, since the page may be
-// too short to bring its section all the way up.
+// too short to bring its section all the way up. Only on the page the links point into.
 const navLinks = $$(".nav a");
-const marks = navLinks.map((a) => $(a.hash));
+const marks = navLinks.map((a) => a.getAttribute("href").startsWith("#") && $(a.hash));
+const spy = marks.every(Boolean);
 let current = 0;
 let pinned = -1;
-navLinks.forEach((a, i) => a.addEventListener("click", () => { pinned = i; frame(); }));
-for (const type of ["wheel", "touchstart", "keydown"]) {
-  addEventListener(type, () => { pinned = -1; onScroll(); }, { passive: true });
-}
-
 let ticking = false;
 function frame() {
   ticking = false;
+  if (!spy) return;
   const vh = innerHeight;
   let idx = 0;
   marks.forEach((m, i) => { if (m.getBoundingClientRect().top <= vh * 0.4) idx = i; });
@@ -58,8 +57,14 @@ function onScroll() {
     requestAnimationFrame(frame);
   }
 }
-addEventListener("scroll", onScroll, { passive: true });
-frame();
+if (spy) {
+  navLinks.forEach((a, i) => a.addEventListener("click", () => { pinned = i; frame(); }));
+  for (const type of ["wheel", "touchstart", "keydown"]) {
+    addEventListener(type, () => { pinned = -1; onScroll(); }, { passive: true });
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  frame();
+}
 
 // Sky. Low precision positions (better than a degree), plenty for a drawing.
 const RAD = Math.PI / 180;
@@ -67,6 +72,7 @@ const LAT = 43.25 * RAD; // Almaty
 const LON = 76.94;
 const OBL = 23.4397 * RAD;
 const EAST = 75, WEST = 285; // the sun and moon cross the whole width, east on the left
+const HORIZON = 0.3; // share of the land's height where the far crests meet the sky
 
 function horizontal(ra, dec, lst) {
   const h = lst - ra;
@@ -101,16 +107,13 @@ function moonPath(k, waxing) {
 }
 
 const stage = $(".sky-stage");
-const ridge = $(".layer svg");
 const orb = $("#orb");
 const orbLit = $("#orb-lit");
 const clock = $("#clock");
-const SUN = orbLit.getAttribute("d");
-// The ridge viewBox spans elevation angles from TOP down to BOTTOM (y is minus the angle).
-const view = ridge.viewBox.baseVal;
-const TOP = -view.y;
-const BOTTOM = -(view.y + view.height);
+const SUN = orbLit?.getAttribute("d");
 
+// The sun or moon right now, behind the land: it sets behind the far crests, and peaks
+// hide it for a while as they pass.
 function placeSky() {
   const now = Date.now();
   const local = new Date(now + 5 * 3600000); // Almaty, UTC+5
@@ -118,28 +121,25 @@ function placeSky() {
     String(local.getUTCHours()).padStart(2, "0") + ":" + String(local.getUTCMinutes()).padStart(2, "0");
 
   const { sun, moon } = skyAt(now);
-  const body = sun.alt > BOTTOM ? sun : moon.alt > BOTTOM ? moon : null;
+  const body = sun.alt > -1 ? sun : moon.alt > -1 ? moon : null;
   orb.classList.toggle("on", !!body);
   if (!body) return;
   orb.classList.toggle("moon", body === moon);
   orbLit.setAttribute("d", body === moon ? moonPath(moon.lit, moon.waxing) : SUN);
 
-  // Same vertical scale as the ridge while low, so it rises and sets behind the peaks.
-  // Higher up, TOP to 90° is eased into the sky, stopping 24px short of its top.
+  // Low bodies climb quickly, so even a winter sun clears the peaks at noon
   const s = stage.getBoundingClientRect();
-  const b = ridge.getBoundingClientRect();
-  const top = b.top - s.top;
+  const top = s.height * HORIZON;
   const x = ((body.az - EAST) / (WEST - EAST)) * s.width;
-  const y = body.alt <= TOP
-    ? top + ((TOP - body.alt) * b.height) / (TOP - BOTTOM)
-    : top - (top - 24) * Math.sin((((body.alt - TOP) / (90 - TOP)) * Math.PI) / 2);
+  const y = top - (top - 24) * Math.pow(Math.max(0, body.alt) / 90, 0.45) - Math.min(0, body.alt) * 4;
   orb.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
 }
-placeSky();
-setInterval(placeSky, 30000);
-addEventListener("resize", () => requestAnimationFrame(() => { placeSky(); frame(); }));
-
-// Rest the pulse while the sky is off screen.
-new IntersectionObserver(([e]) => orb.classList.toggle("paused", !e.isIntersecting)).observe(stage);
+if (orb) {
+  placeSky();
+  setInterval(placeSky, 30000);
+  // Rest the pulse while the sky is off screen.
+  new IntersectionObserver(([e]) => orb.classList.toggle("paused", !e.isIntersecting)).observe(stage);
+}
+addEventListener("resize", () => requestAnimationFrame(() => { if (orb) placeSky(); frame(); }));
 
 for (const n of $$("[data-year]")) n.textContent = new Date().getFullYear();

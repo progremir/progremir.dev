@@ -21,9 +21,6 @@
   --sun: #eba35c;
   --moon: #e6e6e6;
   --moon-dark: #272727;
-  --ridge-far: #8f8f8f;
-  --ridge-mid: #3d3d3d;
-  --ridge-near: #2b2b2b;
   --glass: rgb(31 31 31 / 0.72);
   --glass-line: rgb(255 255 255 / 0.08);
 
@@ -34,18 +31,12 @@
   --io: cubic-bezier(0.65, 0, 0.35, 1);   /* wipes */
 
   --gutter: 24px;
-  --sky: 96px;      /* room above the ridge for a high sun */
-  --span: 1;        /* ridge width in viewports; above 1 crops to the middle */
-  --relief: 0.252;  /* ridge height per width: its viewBox, 3 times taller */
-  --ridge: calc(var(--span) * var(--relief) * 100vw);
+  --land: 440px;    /* height of the ink landscape, sky included */
 }
 
-/* Keep the relief's shape on any width, capped by the height */
+/* The landscape grows with the width, capped by the height */
 @supports (height: 1svh) {
-  :root {
-    --sky: clamp(64px, min(7vw, 11svh), 160px);
-    --ridge: min(calc(var(--span) * var(--relief) * 100vw), 38svh);
-  }
+  :root { --land: clamp(240px, min(31vw, 49svh), 640px); }
 }
 
 @media (prefers-color-scheme: light) {
@@ -63,9 +54,6 @@
     --sun: #df7020;
     --moon: #8f8f8f;
     --moon-dark: #ebebeb;
-    --ridge-far: #8f8f8f;
-    --ridge-mid: #d4d4d4;
-    --ridge-near: #e5e5e5;
     --glass: rgb(255 255 255 / 0.72);
     --glass-line: rgb(0 0 0 / 0.08);
   }
@@ -182,31 +170,21 @@ a { color: inherit; text-decoration: none; }
 .btn:hover .i { transform: translateY(2px); }
 .btn:active { transform: scale(0.98); }
 
-/* Sky: the ridge, the sun or moon, and a caption */
+/* Sky: the sun or moon behind an endless ink landscape (land.js), and a caption */
 .sky { margin: 0; }
+html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .sky-stage {
   position: relative;
-  height: calc(var(--sky) + var(--ridge));
+  height: var(--land);
   overflow: hidden;
 }
-.layer {
-  position: absolute; inset: var(--sky) 0 0;
-  overflow: hidden;
+.land {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 48px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 48px), transparent);
 }
-.layer svg {
-  position: absolute; top: 0; left: 50%;
-  width: calc(var(--span) * 100%); height: 100%;
-  translate: -50% 0;
-}
-.layer path {
-  fill: var(--bg);
-  stroke-width: 1;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-.layer-far path { stroke: var(--ridge-far); }
-.layer-mid path { stroke: var(--ridge-mid); }
-.layer-near path { stroke: var(--ridge-near); }
+.land-strip { position: absolute; inset: 0; }
+.land canvas { position: absolute; top: 0; height: 100%; }
 
 .orb {
   position: absolute; top: 0; left: 0;
@@ -284,7 +262,7 @@ a { color: inherit; text-decoration: none; }
 .js .nav { opacity: 0; transform: translateY(-8px); }
 .js .hero-copy > *,
 .js [data-reveal] { opacity: 0; transform: translateY(32px); }
-.js .layer { clip-path: inset(0 100% 0 0); }
+.js .land { clip-path: inset(0 100% 0 0); }
 .js .caption { opacity: 0; transform: translateY(10px); filter: blur(4px); }
 .js .orb-disc { opacity: 0; transform: scale(0.85); filter: blur(4px); }
 
@@ -298,23 +276,20 @@ a { color: inherit; text-decoration: none; }
 .hero-copy > :nth-child(2) { --d: 160ms; }
 .hero-copy > :nth-child(3) { --d: 240ms; }
 
-.intro .layer {
+.intro.drawn .land {
   clip-path: inset(0);
-  transition: clip-path 1100ms var(--io) var(--d);
+  transition: clip-path 1600ms var(--io) 200ms;
 }
-.layer-far { --d: 400ms; }
-.layer-mid { --d: 560ms; }
-.layer-near { --d: 720ms; }
 
-.intro .caption {
+.intro.drawn .caption {
   opacity: 1; transform: none; filter: none;
-  transition: transform 1050ms var(--e) 900ms, opacity 750ms var(--e2) 900ms, filter 750ms var(--e2) 900ms;
+  transition: transform 1050ms var(--e) 800ms, opacity 750ms var(--e2) 800ms, filter 750ms var(--e2) 800ms;
 }
-.intro .orb-disc {
+.intro.drawn .orb-disc {
   opacity: 1; transform: none; filter: none;
-  transition: transform 1050ms var(--e) 1500ms, opacity 750ms var(--e2) 1500ms, filter 750ms var(--e2) 1500ms;
+  transition: transform 1050ms var(--e) 1400ms, opacity 750ms var(--e2) 1400ms, filter 750ms var(--e2) 1400ms;
 }
-.intro .orb-disc::after { animation: pulse 2s var(--e2) 2.4s infinite; }
+.intro.drawn .orb-disc::after { animation: pulse 2s var(--e2) 2.3s infinite; }
 
 @keyframes pulse {
   from { transform: scale(1); opacity: 0.55; }
@@ -322,22 +297,22 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* If main.js never runs, show everything after a moment instead of leaving it hidden */
-.js:not(.ready) :is(.nav, .hero-copy > *, [data-reveal], .layer, .caption) {
+.js:not(.ready) :is(.nav, .hero-copy > *, [data-reveal], .land, .caption) {
   animation: show 0s 3s forwards;
 }
 @keyframes show { to { opacity: 1; transform: none; filter: none; clip-path: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   .js .nav, .js .hero-copy > *, .js [data-reveal], .js .caption, .js .orb-disc { transform: none; filter: none; }
-  .js .layer { clip-path: none; opacity: 0; }
-  .intro .layer { opacity: 1; transition: opacity 700ms var(--ease) var(--d); }
-  .intro .orb-disc::after { animation: none; }
+  .js .land { clip-path: none; opacity: 0; }
+  .intro.drawn .land { opacity: 1; transition: opacity 700ms var(--ease) 200ms; }
+  .intro.drawn .orb-disc::after { animation: none; }
 }
 
 /* Short screens, such as 1280 × 720 laptops: keep the whole hero in view */
 @media (max-height: 820px) and (min-width: 640px) {
   @supports (height: 1svh) {
-    :root { --ridge: min(calc(var(--span) * var(--relief) * 100vw), 34svh); }
+    :root { --land: clamp(240px, min(31vw, 45svh), 640px); }
   }
   .hero { padding-top: 80px; }
   .hero-copy { padding-block: 24px 32px; }
@@ -346,13 +321,19 @@ a { color: inherit; text-decoration: none; }
 
 /* Tablet */
 @media (max-width: 1023px) {
-  :root { --span: 1.25; }
+  :root { --land: 360px; }
+  @supports (height: 1svh) {
+    :root { --land: clamp(240px, min(56vw, 44svh), 640px); }
+  }
   .name { font-size: 60px; line-height: 60px; }
 }
 
 /* Phone */
 @media (max-width: 639px) {
-  :root { --gutter: 16px; --span: 2.2; }
+  :root { --gutter: 16px; --land: 340px; }
+  @supports (height: 1svh) {
+    :root { --land: clamp(220px, min(96vw, 46svh), 480px); }
+  }
   .hero { padding-top: 80px; }
   .hero-copy { padding-block: 32px 48px; }
   .name { font-size: 48px; line-height: 48px; }
@@ -370,7 +351,9 @@ a { color: inherit; text-decoration: none; }
 
 /* Short phones */
 @media (max-width: 639px) and (max-height: 700px) {
-  :root { --span: 2; }
+  @supports (height: 1svh) {
+    :root { --land: clamp(200px, min(90vw, 38svh), 480px); }
+  }
   .hero { padding-top: 64px; }
   .hero-copy { padding-block: 24px 32px; }
 }

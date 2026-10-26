@@ -3,27 +3,22 @@
 Plain static site in `site/`. No build step.
 
 - `index.html`, `style.css`, `main.js`: the page
+- `land.js`, `ink.js`: the landscape in the hero
 - `404.html`: served for unknown paths
 - `fonts/geist.woff2`: Geist, subset to Latin and weights 400 to 600 (SIL OFL, see `fonts/OFL.txt`)
 - `og.png`, `favicon.svg`, `apple-touch-icon.png`: sharing image and icons
 
-## The skyline
+## The landscape
 
-The mountains in the hero are the real horizon seen from the north of Almaty,
-looking south across the Ile Alatau, traced from SRTM elevation data (AWS
-Terrain Tiles): the foothills, the front range and the snowy crest behind it,
-drawn three times taller than true scale like most mountain panoramas. The sun
-or the moon is drawn for the current time, computed in the browser, rising and
-setting behind the peaks. To trace the ridge again, for example from another
-viewpoint:
-
-```sh
-pip install numpy pillow
-python3 scripts/skyline.py
-```
-
-Then paste the printed viewBox and paths into `site/index.html` and
-`site/404.html`.
+The hero is an endless ink scroll of the Tian Shan around Almaty: snowy peaks
+over spruce forest, foothills with wild apples, and the steppe with yurts,
+horses, sheep and poplar rows. It is generated, never stored. `ink.js` paints it
+in tiles inside web workers with the brush, blob and texture techniques of
+[{Shan, Shui}*](https://github.com/LingDong-/shan-shui-inf) by Lingdong Huang
+(MIT, notice kept in the file). `land.js` lines the tiles up on one canvas and
+pans it slowly on the compositor. The scroll runs with the clock, so everyone
+sees the same stretch at the same moment, and the sun or the moon is drawn for
+the current time in Almaty, passing behind the peaks.
 
 ## Run locally
 
