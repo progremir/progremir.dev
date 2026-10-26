@@ -99,7 +99,7 @@ function skyAt(t) {
   return { sun, moon };
 }
 
-// Lit part of a 12px moon: the bright limb plus the terminator ellipse.
+// Lit part of the moon, in a 12 unit box: the bright limb plus the terminator ellipse.
 function moonPath(k, waxing) {
   const rx = (Math.abs(1 - 2 * k) * 6).toFixed(2);
   const term = (k < 0.5) === waxing ? 0 : 1;
@@ -110,7 +110,6 @@ const stage = $(".sky-stage");
 const orb = $("#orb");
 const orbLit = $("#orb-lit");
 const clock = $("#clock");
-const SUN = orbLit?.getAttribute("d");
 
 // The sun or moon right now, behind the land: it sets behind the far crests, and peaks
 // hide it for a while as they pass.
@@ -125,19 +124,21 @@ function placeSky() {
   orb.classList.toggle("on", !!body);
   if (!body) return;
   orb.classList.toggle("moon", body === moon);
-  orbLit.setAttribute("d", body === moon ? moonPath(moon.lit, moon.waxing) : SUN);
+  if (body === moon) orbLit.setAttribute("d", moonPath(moon.lit, moon.waxing));
 
-  // Low bodies climb quickly, so even a winter sun clears the peaks at noon
+  // Low bodies climb quickly, so even a winter sun clears the peaks at noon. Up high,
+  // the halo stays clear of the top edge.
   const s = stage.getBoundingClientRect();
   const top = s.height * HORIZON;
+  const high = Math.min(top, orb.offsetHeight * 0.4);
   const x = ((body.az - EAST) / (WEST - EAST)) * s.width;
-  const y = top - (top - 24) * Math.pow(Math.max(0, body.alt) / 90, 0.45) - Math.min(0, body.alt) * 4;
+  const y = top - (top - high) * Math.pow(Math.max(0, body.alt) / 90, 0.45) - Math.min(0, body.alt) * 4;
   orb.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
 }
 if (orb) {
   placeSky();
   setInterval(placeSky, 30000);
-  // Rest the pulse while the sky is off screen.
+  // Rest the halo while the sky is off screen.
   new IntersectionObserver(([e]) => orb.classList.toggle("paused", !e.isIntersecting)).observe(stage);
 }
 addEventListener("resize", () => requestAnimationFrame(() => { if (orb) placeSky(); frame(); }));

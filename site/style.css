@@ -24,6 +24,7 @@
   --moon: #ece4d3;
   --moon-dark: #2b2720;
   --moon-line: transparent;
+  --moon-glow: radial-gradient(closest-side, rgb(0 0 0 / 0.42) 24%, rgb(0 0 0 / 0.16) 52%, rgb(0 0 0 / 0.04) 78%, transparent);
   --land-ink: 230, 222, 206;  /* the landscape's ink, paper and tree tone (land.js) */
   --land-paper: #1c1a16;
   --land-leaf: 0.6;
@@ -62,7 +63,7 @@
     --moon: #fbf8f1;            /* a paper-white moon, outlined in ink */
     --moon-dark: #e2d8c4;
     --moon-line: rgb(44 40 34 / 0.45);
-    --moon-ring: rgb(44 40 34 / 0.45);
+    --moon-glow: radial-gradient(closest-side, #000 26%, rgb(0 0 0 / 0.6) 46%, rgb(0 0 0 / 0.22) 70%, transparent); /* white on paper needs more */
     --land-ink: 44, 40, 34;
     --land-paper: #faf6ee;
     --land-leaf: 1;
@@ -207,27 +208,42 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .land-strip { position: absolute; inset: 0; }
 .land canvas { position: absolute; top: 0; height: 100%; }
 
+/* The sun is one big halo; the moon a disc, with its phase, in a fainter one. The box is
+   the halo, centred on the body (main.js), and both grow with the land. */
 .orb {
+  --halo: clamp(128px, calc(var(--land) * 0.44), 200px);
+  --disc: clamp(18px, calc(var(--land) * 0.055), 26px);
+  --glow: radial-gradient(closest-side, #000 6%, rgb(0 0 0 / 0.88) 13%, rgb(0 0 0 / 0.5) 25%, rgb(0 0 0 / 0.22) 42%, rgb(0 0 0 / 0.08) 62%, rgb(0 0 0 / 0.02) 80%, transparent);
   position: absolute; top: 0; left: 0;
-  width: 12px; height: 12px; margin: -6px 0 0 -6px;
+  width: var(--halo); height: var(--halo);
+  margin: calc(var(--halo) / -2) 0 0 calc(var(--halo) / -2);
   color: var(--sun);
   visibility: hidden;
 }
 .orb.on { visibility: visible; }
-.orb.moon { color: var(--moon); }
-.orb-disc { position: relative; display: block; width: 100%; height: 100%; }
-.orb-disc svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.orb-dark { fill: none; }
-.orb.moon .orb-dark { fill: var(--moon-dark); }
-.orb.moon .orb-disc { border-radius: 50%; box-shadow: 0 0 0 1px var(--moon-line); }
-.orb-lit { fill: currentColor; }
-.orb-disc::after {
-  content: ""; position: absolute; inset: 0;
-  border: 1px solid currentColor; border-radius: 50%;
-  opacity: 0;
+.orb.moon {
+  --halo: clamp(72px, calc(var(--land) * 0.22), 104px);
+  --glow: var(--moon-glow);
+  color: var(--moon);
 }
-.orb.moon .orb-disc::after { border-color: var(--moon-ring, currentColor); }
-.orb.paused .orb-disc::after { animation-play-state: paused; }
+.orb-disc { position: absolute; inset: 0; }
+.orb-disc::before {
+  content: ""; position: absolute; inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  -webkit-mask-image: var(--glow);
+  mask-image: var(--glow);
+}
+.orb-disc svg {
+  position: absolute; top: calc(50% - var(--disc) / 2); left: calc(50% - var(--disc) / 2);
+  width: var(--disc); height: var(--disc);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--moon-line);
+}
+.orb:not(.moon) svg { display: none; }
+.orb-dark { fill: var(--moon-dark); }
+.orb-lit { fill: currentColor; }
+.orb.paused .orb-disc::before { animation-play-state: paused; }
 
 .caption {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 16px;
@@ -312,11 +328,10 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   opacity: 1; transform: none; filter: none;
   transition: transform 1050ms var(--e) 1400ms, opacity 750ms var(--e2) 1400ms, filter 750ms var(--e2) 1400ms;
 }
-.intro.drawn .orb-disc::after { animation: pulse 2s var(--e2) 2.3s infinite; }
+.intro.drawn .orb-disc::before { animation: breathe 4s ease-in-out 2.3s infinite alternate; }
 
-@keyframes pulse {
-  from { transform: scale(1); opacity: 0.55; }
-  to { transform: scale(2.6); opacity: 0; }
+@keyframes breathe {
+  to { transform: scale(1.08); opacity: 0.8; }
 }
 
 /* If main.js never runs, show everything after a moment instead of leaving it hidden */
@@ -329,7 +344,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   .js .nav, .js .hero-copy > *, .js [data-reveal], .js .caption, .js .orb-disc { transform: none; filter: none; }
   .js .land { clip-path: none; opacity: 0; }
   .intro.drawn .land { opacity: 1; transition: opacity 700ms var(--ease) 200ms; }
-  .intro.drawn .orb-disc::after { animation: none; }
+  .intro.drawn .orb-disc::before { animation: none; }
 }
 
 /* Short screens, such as 1280 × 720 and 1536 × 864 laptops: keep the whole hero in view */
