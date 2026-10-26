@@ -262,6 +262,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   padding: 12px; border-radius: 12px;
   transition: background-color 300ms var(--ease), transform 500ms var(--ease);
 }
+.row-project { grid-template-columns: 11rem minmax(0, 1fr) 16px; }
 .row-job { grid-template-columns: 11rem minmax(0, 1fr) auto 16px; }
 .row-link { grid-template-columns: 20px minmax(0, 1fr) auto 16px; }
 .row-title { font-weight: 500; color: var(--strong); }
@@ -370,6 +371,10 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   .lead { font-size: 18px; line-height: 28px; }
   .cta { margin-top: 32px; }
   .section { padding-block: 80px; }
+  .row-project { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "title go" "meta go"; gap: 0 16px; }
+  .row-project .row-title { grid-area: title; }
+  .row-project .row-meta { grid-area: meta; }
+  .row-project .row-go { grid-area: go; }
   .row-job { grid-template-columns: minmax(0, 1fr) auto 16px; grid-template-areas: "title side go" "meta side go"; gap: 0 16px; }
   .row-job .row-title { grid-area: title; }
   .row-job .row-meta { grid-area: meta; }
