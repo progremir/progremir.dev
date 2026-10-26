@@ -17,8 +17,9 @@ in tiles inside web workers with the brush, blob and texture techniques of
 [{Shan, Shui}*](https://github.com/LingDong-/shan-shui-inf) by Lingdong Huang
 (MIT, notice kept in the file). `land.js` lines the tiles up on one canvas and
 pans it slowly on the compositor. The scroll runs with the clock, so everyone
-sees the same stretch at the same moment, and the sun or the moon is drawn for
-the current time in Almaty, passing behind the peaks.
+sees the same stretch at the same moment. The light theme has the sun and the
+dark theme the moon, each where it is over Almaty while it's up, passing behind
+the peaks.
 
 ## Run locally
 

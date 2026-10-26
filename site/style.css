@@ -23,8 +23,6 @@
   --sun: #e2643f;
   --moon: #ece4d3;
   --moon-dark: #2b2720;
-  --moon-line: transparent;
-  --moon-glow: radial-gradient(closest-side, rgb(0 0 0 / 0.42) 24%, rgb(0 0 0 / 0.16) 52%, rgb(0 0 0 / 0.04) 78%, transparent);
   --land-ink: 230, 222, 206;  /* the landscape's ink, paper and tree tone (land.js) */
   --land-paper: #1c1a16;
   --land-leaf: 0.6;
@@ -60,10 +58,6 @@
     --grad-from: #1c1915;
     --grad-to: #6b6255;
     --sun: #c4402b;
-    --moon: #fbf8f1;            /* a paper-white moon, outlined in ink */
-    --moon-dark: #e2d8c4;
-    --moon-line: rgb(44 40 34 / 0.45);
-    --moon-glow: radial-gradient(closest-side, #000 26%, rgb(0 0 0 / 0.6) 46%, rgb(0 0 0 / 0.22) 70%, transparent); /* white on paper needs more */
     --land-ink: 44, 40, 34;
     --land-paper: #faf6ee;
     --land-leaf: 1;
@@ -208,8 +202,9 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .land-strip { position: absolute; inset: 0; }
 .land canvas { position: absolute; top: 0; height: 100%; }
 
-/* The sun is one big halo; the moon a disc, with its phase, in a fainter one. The box is
-   the halo, centred on the body (main.js), and both grow with the land. */
+/* By day (the light theme) the sun, one big halo; by night (the dark theme) the moon, a
+   disc with its phase in a fainter one. The box is the halo, centred on the body
+   (main.js), and both grow with the land. */
 .orb {
   --halo: clamp(128px, calc(var(--land) * 0.44), 200px);
   --disc: clamp(18px, calc(var(--land) * 0.055), 26px);
@@ -223,7 +218,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .orb.on { visibility: visible; }
 .orb.moon {
   --halo: clamp(72px, calc(var(--land) * 0.22), 104px);
-  --glow: var(--moon-glow);
+  --glow: radial-gradient(closest-side, rgb(0 0 0 / 0.42) 24%, rgb(0 0 0 / 0.16) 52%, rgb(0 0 0 / 0.04) 78%, transparent);
   color: var(--moon);
 }
 .orb-disc { position: absolute; inset: 0; }
@@ -237,8 +232,6 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .orb-disc svg {
   position: absolute; top: calc(50% - var(--disc) / 2); left: calc(50% - var(--disc) / 2);
   width: var(--disc); height: var(--disc);
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--moon-line);
 }
 .orb:not(.moon) svg { display: none; }
 .orb-dark { fill: var(--moon-dark); }

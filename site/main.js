@@ -111,8 +111,13 @@ const orb = $("#orb");
 const orbLit = $("#orb-lit");
 const clock = $("#clock");
 
-// The sun or moon right now, behind the land: it sets behind the far crests, and peaks
-// hide it for a while as they pass.
+// The paper theme has the sun and the night theme the moon. Each is where it really is
+// over Almaty while it's up, and rests here while it's below the horizon.
+const paper = matchMedia("(prefers-color-scheme: light)");
+const REST = { sun: { az: 215, alt: 24 }, moon: { az: 135, alt: 30 } };
+
+// The sun or moon, behind the land: it sets behind the far crests, and peaks hide it for
+// a while as they pass.
 function placeSky() {
   const now = Date.now();
   const local = new Date(now + 5 * 3600000); // Almaty, UTC+5
@@ -120,11 +125,12 @@ function placeSky() {
     String(local.getUTCHours()).padStart(2, "0") + ":" + String(local.getUTCMinutes()).padStart(2, "0");
 
   const { sun, moon } = skyAt(now);
-  const body = sun.alt > -1 ? sun : moon.alt > -1 ? moon : null;
-  orb.classList.toggle("on", !!body);
-  if (!body) return;
-  orb.classList.toggle("moon", body === moon);
-  if (body === moon) orbLit.setAttribute("d", moonPath(moon.lit, moon.waxing));
+  const day = paper.matches;
+  const real = day ? sun : moon;
+  const body = real.alt > -1 ? real : day ? REST.sun : REST.moon;
+  orb.classList.toggle("moon", !day);
+  // The moon's phase, but never thinner than a clear crescent, so there is a moon to see
+  if (!day) orbLit.setAttribute("d", moonPath(Math.max(0.25, moon.lit), moon.waxing));
 
   // Low bodies climb quickly, so even a winter sun clears the peaks at noon. Up high,
   // the halo stays clear of the top edge.
@@ -134,10 +140,12 @@ function placeSky() {
   const x = ((body.az - EAST) / (WEST - EAST)) * s.width;
   const y = top - (top - high) * Math.pow(Math.max(0, body.alt) / 90, 0.45) - Math.min(0, body.alt) * 4;
   orb.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+  orb.classList.add("on");
 }
 if (orb) {
   placeSky();
   setInterval(placeSky, 30000);
+  paper.addEventListener("change", placeSky);
   // Rest the halo while the sky is off screen.
   new IntersectionObserver(([e]) => orb.classList.toggle("paused", !e.isIntersecting)).observe(stage);
 }
