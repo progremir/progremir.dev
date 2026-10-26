@@ -24,7 +24,17 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/eb-garamond.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/style.css">
-  <script>document.documentElement.classList.add("js")</script>
+  <script>
+    // JS is on, and the theme is the device's unless the visitor has picked the other with
+    // the toggle (main.js). Set before the page shows, so it never flashes the wrong one.
+    {
+      const html = document.documentElement;
+      let pick = null;
+      try { pick = localStorage.getItem("theme"); } catch {}
+      html.classList.add("js");
+      html.dataset.theme = pick === "light" || pick === "dark" ? pick : matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+  </script>
   <script src="/land.js" defer></script>
   <script src="/main.js" defer></script>
   <script type="application/ld+json">
@@ -64,6 +74,18 @@
       <a href="#projects">Projects</a>
       <a href="#work">Work</a>
       <a href="#contact">Contact</a>
+      <button class="theme" type="button" aria-label="Dark theme" aria-pressed="false" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <mask id="theme-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+            <rect width="24" height="24" fill="#fff"/>
+            <circle class="theme-cut" cx="16" cy="8" r="8" fill="#000"/>
+          </mask>
+          <g mask="url(#theme-cut)"><circle class="theme-body" cx="12" cy="12" r="9"/></g>
+          <path class="theme-rays" d="M12 1.5V4M12 20v2.5M1.5 12H4M20 12h2.5M4.58 4.58l1.77 1.77M17.66 17.66l1.77 1.77M4.58 19.42l1.77-1.77M17.66 6.34l1.77-1.77"/>
+          <path class="theme-star" d="M17.5 2.2Q18 4.5 20.3 5Q18 5.5 17.5 7.8Q17 5.5 14.7 5Q17 4.5 17.5 2.2Z"/>
+          <path class="theme-star" d="M21.2 8.8Q21.52 10.28 23 10.6Q21.52 10.92 21.2 12.4Q20.88 10.92 19.4 10.6Q20.88 10.28 21.2 8.8Z"/>
+        </svg>
+      </button>
     </nav>
   </header>
 

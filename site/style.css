@@ -8,28 +8,37 @@
   font-display: swap;
 }
 
-/* Night: warm black paper, pale ink */
+/* Night and day: warm black paper and pale ink, or rice paper and sumi ink with the
+   mountains a lighter sheet, as in shan-shui-inf. They are the two ends of one dial,
+   --day, from 0% at night to 100% by day, and every colour is mixed along it (day first),
+   so when the theme turns (main.js) the whole page fades through dusk or dawn. */
+@property --day { syntax: "<percentage>"; inherits: true; initial-value: 0%; }
+
 :root {
   color-scheme: dark;
-  --bg: #13110e;
-  --surface: #1f1c17;
-  --surface-strong: #2b2720;
-  --strong: #f3ecdf;
-  --text: #e9e2d3;
-  --muted: #a99f8e;
-  --faint: #918877;
-  --grad-from: #f3ecdf;
-  --grad-to: #a99f8e;
-  --sun: #e2643f;
+  --day: 0%;
+  --bg: color-mix(in oklab, #f0e7d5 var(--day), #13110e);
+  --surface: color-mix(in oklab, #e7dcc6 var(--day), #1f1c17);
+  --surface-strong: color-mix(in oklab, #ddd0b6 var(--day), #2b2720);
+  --strong: color-mix(in oklab, #1c1915 var(--day), #f3ecdf);
+  --text: color-mix(in oklab, #2a2620 var(--day), #e9e2d3);
+  --muted: color-mix(in oklab, #645c50 var(--day), #a99f8e);
+  --faint: color-mix(in oklab, #6a6155 var(--day), #918877);
+  --grad-from: color-mix(in oklab, #1c1915 var(--day), #f3ecdf);
+  --grad-to: color-mix(in oklab, #6b6255 var(--day), #a99f8e);
+  --sun: color-mix(in oklab, #c4402b var(--day), #e2643f);
   --moon: #ece4d3;
   --moon-dark: #2b2720;
-  --sky-mid: #141a29;  /* the sky behind the hero, bluer down to the horizon */
-  --sky-low: #1d2b48;
-  --land-ink: 230, 222, 206;  /* the landscape's ink, paper and tree tone (land.js) */
+  /* the sky behind the hero: a sunset by day, blush then rose at the horizon, and a
+     night bluer down to it */
+  --sky-mid: color-mix(in oklab, #f2dbd3 var(--day), #141a29);
+  --sky-low: color-mix(in oklab, #f3c6c0 var(--day), #1d2b48);
+  --glass: color-mix(in oklab, rgb(240 231 213 / 0.72) var(--day), rgb(31 28 23 / 0.72));
+  --glass-line: color-mix(in oklab, rgb(28 25 21 / 0.1) var(--day), rgb(243 236 223 / 0.08));
+  /* the landscape's ink, paper and tree tone (land.js): these switch, and land.js fades */
+  --land-ink: 230, 222, 206;
   --land-paper: #1c1a16;
   --land-leaf: 0.6;
-  --glass: rgb(31 28 23 / 0.72);
-  --glass-line: rgb(243 236 223 / 0.08);
 
   --font: "EB Garamond", Garamond, Georgia, serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1); /* base curve: 500ms movement, 300ms colour */
@@ -39,6 +48,8 @@
 
   --gutter: 24px;
   --land: 440px;    /* height of the ink landscape, sky included */
+
+  transition: --day 1400ms cubic-bezier(0.45, 0, 0.55, 1); /* dusk and dawn, as long as DUSK in land.js */
 }
 
 /* The landscape grows with the width, capped by the height */
@@ -46,28 +57,17 @@
   :root { --land: clamp(240px, min(31vw, 49svh), 640px); }
 }
 
-/* Day: rice paper and sumi ink, the mountains a lighter sheet, as in shan-shui-inf */
+/* The device's theme, or the visitor's pick with the toggle, set on <html> before the page
+   shows. Without JS, the device's alone. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --day: 100%;
+  --land-ink: 44, 40, 34;
+  --land-paper: #faf6ee;
+  --land-leaf: 1;
+}
 @media (prefers-color-scheme: light) {
-  :root {
-    color-scheme: light;
-    --bg: #f0e7d5;
-    --surface: #e7dcc6;
-    --surface-strong: #ddd0b6;
-    --strong: #1c1915;
-    --text: #2a2620;
-    --muted: #645c50;
-    --faint: #6a6155;
-    --grad-from: #1c1915;
-    --grad-to: #6b6255;
-    --sun: #c4402b;
-    --sky-mid: #f2dbd3;  /* sunset: blush, then rose at the horizon */
-    --sky-low: #f3c6c0;
-    --land-ink: 44, 40, 34;
-    --land-paper: #faf6ee;
-    --land-leaf: 1;
-    --glass: rgb(240 231 213 / 0.72);
-    --glass-line: rgb(28 25 21 / 0.1);
-  }
+  :root:not([data-theme]) { color-scheme: light; --day: 100%; }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -140,6 +140,47 @@ a { color: inherit; text-decoration: none; }
 .nav a:hover { color: var(--strong); }
 .nav a:active { transform: scale(0.98); }
 .nav a[aria-current] { color: var(--strong); background: var(--surface-strong); }
+
+/* Day and night toggle, at the end of the nav: a vermilion sun by day, which swells into
+   a crescent moon with two stars at night as its rays draw in. */
+.theme {
+  position: relative;
+  display: grid; place-items: center;
+  width: 40px; height: 40px; margin-left: 6px;
+  padding: 0; border: 0; border-radius: 9999px;
+  background: none; color: var(--sun);
+  font: inherit; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 600ms var(--ease), transform 500ms var(--ease);
+}
+.theme[hidden] { display: none; }
+.theme::before {
+  content: ""; position: absolute; left: -5px; top: 12px; bottom: 12px;
+  width: 1px; background: var(--glass-line);
+}
+.theme svg { width: 20px; height: 20px; overflow: visible; fill: currentColor; transition: transform 700ms var(--e); }
+.theme:active { transform: scale(0.94); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .theme:hover svg { transform: rotate(-24deg); }
+}
+.theme-body, .theme-cut, .theme-rays { transform-origin: 12px 12px; }
+.theme-star { transform-box: fill-box; transform-origin: center; }
+.theme-rays { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* Toward day: the stars go and the crescent fills out and shrinks, then the rays come out */
+.theme-body { transform: scale(0.55); transition: transform 600ms var(--e); }
+.theme-cut { transform: translate(9px, -9px); transition: transform 500ms var(--e); }
+.theme-rays { transition: transform 600ms var(--e) 160ms, opacity 400ms var(--e2) 160ms; }
+.theme-star { opacity: 0; transform: scale(0); transition: transform 300ms var(--ease), opacity 200ms var(--ease); }
+
+/* Toward night: the rays draw in, the sun swells into the moon, a crescent is cut out of
+   it and two stars come out beside it */
+.theme[aria-pressed="true"] { color: var(--moon); }
+[aria-pressed="true"] .theme-rays { opacity: 0; transform: rotate(-60deg) scale(0.5); transition: transform 400ms var(--ease), opacity 250ms var(--ease); }
+[aria-pressed="true"] .theme-body { transform: none; transition: transform 700ms var(--e) 80ms; }
+[aria-pressed="true"] .theme-cut { transform: none; transition: transform 700ms var(--e) 140ms; }
+[aria-pressed="true"] .theme-star { opacity: 1; transform: none; transition: transform 600ms var(--e) 380ms, opacity 400ms var(--e2) 380ms; }
+[aria-pressed="true"] .theme-star + .theme-star { transition-delay: 500ms; }
 
 /* Hero: the name, a line and a quote, centred over the landscape */
 .hero { padding-top: 96px; }
@@ -356,6 +397,7 @@ html:not(.js) .sky, .no-land .sky-stage, .no-land .sky::before { display: none; 
   .js .land { clip-path: none; opacity: 0; }
   .intro.drawn .land { opacity: 1; transition: opacity 700ms var(--ease) 200ms; }
   .intro.drawn .orb-disc::before { animation: none; }
+  .theme svg, .theme svg * { transition: none; }
 }
 
 /* Short screens, such as 1280 × 720 and 1536 × 864 laptops: keep the whole hero in view */
@@ -399,6 +441,11 @@ html:not(.js) .sky, .no-land .sky-stage, .no-land .sky::before { display: none; 
   .row-job .row-go { grid-area: go; }
   .row-link .row-side { font-size: 16px; line-height: 24px; }
   .footer { padding-block: 24px 40px; }
+}
+
+/* Narrow phones: room for the toggle in the nav */
+@media (max-width: 359px) {
+  .nav a { padding-inline: 8px; }
 }
 
 /* Short phones */
