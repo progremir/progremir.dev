@@ -1,30 +1,35 @@
-/* One typeface (Geist), Tailwind type steps, spacing 2 4 8 12 16 24 32 40 48 64 80 96. */
+/* Ink on paper, like the landscape: EB Garamond, warm paper and sumi ink, a vermilion sun.
+   Tailwind type steps, spacing 2 4 8 12 16 24 32 40 48 64 80 96. */
 
 @font-face {
-  font-family: "Geist";
-  src: url("/fonts/geist.woff2") format("woff2");
-  font-weight: 400 600;
+  font-family: "EB Garamond";
+  src: url("/fonts/eb-garamond.woff2") format("woff2");
+  font-weight: 400 500;
   font-display: swap;
 }
 
+/* Night: warm black paper, pale ink */
 :root {
   color-scheme: dark;
-  --bg: #000000;
-  --surface: #181818;
-  --surface-strong: #272727;
-  --strong: #ffffff;
-  --text: #ededed;
-  --muted: #a1a1a1;
-  --faint: #8f8f8f;
-  --grad-from: #ffffff;
-  --grad-to: #9b9b9b;
-  --sun: #eba35c;
-  --moon: #e6e6e6;
-  --moon-dark: #272727;
-  --glass: rgb(31 31 31 / 0.72);
-  --glass-line: rgb(255 255 255 / 0.08);
+  --bg: #13110e;
+  --surface: #1f1c17;
+  --surface-strong: #2b2720;
+  --strong: #f3ecdf;
+  --text: #e9e2d3;
+  --muted: #a99f8e;
+  --faint: #918877;
+  --grad-from: #f3ecdf;
+  --grad-to: #a99f8e;
+  --sun: #e2643f;
+  --moon: #ece4d3;
+  --moon-dark: #2b2720;
+  --land-ink: 230, 222, 206;  /* the landscape's ink, paper and tree tone (land.js) */
+  --land-paper: #1c1a16;
+  --land-leaf: 0.6;
+  --glass: rgb(31 28 23 / 0.72);
+  --glass-line: rgb(243 236 223 / 0.08);
 
-  --font: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font: "EB Garamond", Garamond, Georgia, serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1); /* base curve: 500ms movement, 300ms colour */
   --e: cubic-bezier(0.16, 1, 0.3, 1);     /* visual entrances, transform */
   --e2: cubic-bezier(0.33, 1, 0.68, 1);   /* visual entrances, opacity and blur */
@@ -39,23 +44,27 @@
   :root { --land: clamp(240px, min(31vw, 49svh), 640px); }
 }
 
+/* Day: rice paper and sumi ink, the mountains a lighter sheet, as in shan-shui-inf */
 @media (prefers-color-scheme: light) {
   :root {
     color-scheme: light;
-    --bg: #ffffff;
-    --surface: #f5f5f5;
-    --surface-strong: #ebebeb;
-    --strong: #000000;
-    --text: #171717;
-    --muted: #666666;
-    --faint: #6e6e6e;
-    --grad-from: #000000;
-    --grad-to: #666666;
-    --sun: #df7020;
-    --moon: #8f8f8f;
-    --moon-dark: #ebebeb;
-    --glass: rgb(255 255 255 / 0.72);
-    --glass-line: rgb(0 0 0 / 0.08);
+    --bg: #f0e7d5;
+    --surface: #e7dcc6;
+    --surface-strong: #ddd0b6;
+    --strong: #1c1915;
+    --text: #2a2620;
+    --muted: #645c50;
+    --faint: #6a6155;
+    --grad-from: #1c1915;
+    --grad-to: #6b6255;
+    --sun: #c4402b;
+    --moon: #8a8070;
+    --moon-dark: #e2d8c4;
+    --land-ink: 44, 40, 34;
+    --land-paper: #faf6ee;
+    --land-leaf: 1;
+    --glass: rgb(240 231 213 / 0.72);
+    --glass-line: rgb(28 25 21 / 0.1);
   }
 }
 
@@ -70,7 +79,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 400 16px/24px var(--font);
+  font: 400 18px/28px var(--font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -80,7 +89,7 @@ h1, h2 { text-wrap: balance; }
 p { text-wrap: pretty; }
 a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 2px solid var(--strong); outline-offset: 2px; }
-::selection { background: var(--sun); color: #000000; }
+::selection { background: var(--sun); color: var(--bg); }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
@@ -100,7 +109,7 @@ a { color: inherit; text-decoration: none; }
   position: fixed; top: 16px; left: 16px; z-index: 20;
   padding: 8px 12px; border-radius: 9999px;
   background: var(--strong); color: var(--bg);
-  font-size: 14px; line-height: 20px; font-weight: 600;
+  font-size: 16px; line-height: 24px; font-weight: 500;
   transform: translateY(-64px);
   transition: transform 500ms var(--ease);
 }
@@ -122,7 +131,7 @@ a { color: inherit; text-decoration: none; }
 }
 .nav a {
   padding: 8px 12px; border-radius: 9999px;
-  font-size: 14px; line-height: 20px; font-weight: 600;
+  font-size: 16px; line-height: 24px; font-weight: 500;
   color: var(--muted);
   transition: color 300ms var(--ease), background-color 300ms var(--ease), transform 500ms var(--ease);
 }
@@ -144,8 +153,8 @@ a { color: inherit; text-decoration: none; }
 .name {
   width: fit-content;
   padding-bottom: 4px;
-  font-size: 48px; line-height: 48px; font-weight: 600;
-  letter-spacing: -0.025em;
+  font-size: 36px; line-height: 40px; font-weight: 500;
+  letter-spacing: -0.01em;
   background: linear-gradient(90deg, var(--grad-from), var(--grad-to));
   -webkit-background-clip: text;
   background-clip: text;
@@ -162,7 +171,7 @@ a { color: inherit; text-decoration: none; }
   display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 12px; border-radius: 9999px;
   background: var(--strong); color: var(--bg);
-  font-size: 16px; line-height: 24px; font-weight: 600;
+  font-size: 18px; line-height: 28px; font-weight: 500;
   transition: background-color 300ms var(--ease), transform 500ms var(--ease);
 }
 .btn .i { transition: transform 500ms var(--ease); }
@@ -209,7 +218,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .caption {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 16px;
   padding-block: 16px 24px;
-  font-size: 14px; line-height: 20px;
+  font-size: 16px; line-height: 24px;
   color: var(--faint);
 }
 .clock { display: none; font-variant-numeric: tabular-nums; }
@@ -220,7 +229,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .section + .section { padding-top: 0; }
 .label {
   margin-bottom: 24px;
-  font-size: 14px; line-height: 20px; font-weight: 500;
+  font-size: 16px; line-height: 24px; font-weight: 500;
   color: var(--faint);
 }
 
@@ -246,7 +255,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .footer {
   display: flex; justify-content: space-between; align-items: center; gap: 16px;
   padding-block: 32px 48px;
-  font-size: 14px; line-height: 20px;
+  font-size: 16px; line-height: 24px;
   color: var(--faint);
 }
 .back {
@@ -335,7 +344,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   }
   .hero { padding-top: 80px; }
   .hero-copy { padding-block: 32px 48px; }
-  .name { font-size: 36px; line-height: 40px; }
+  .name { font-size: 30px; line-height: 36px; }
   .lead { font-size: 18px; line-height: 28px; }
   .cta { margin-top: 32px; }
   .section { padding-block: 80px; }
@@ -344,7 +353,7 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
   .row-job .row-meta { grid-area: meta; }
   .row-job .row-side { grid-area: side; }
   .row-job .row-go { grid-area: go; }
-  .row-link .row-side { font-size: 14px; line-height: 20px; }
+  .row-link .row-side { font-size: 16px; line-height: 24px; }
   .footer { padding-block: 24px 40px; }
 }
 

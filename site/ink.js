@@ -26,7 +26,8 @@
 //   SOFTWARE.
 //
 // World units: x runs forever, y runs from 0 (sky) to H (foreground). Each tile is TW wide.
-// Runs as a worker: post {k, s (device px per unit), dark, id} and get back {k, id, bitmap}.
+// Runs as a worker: post {k, s (device px per unit), look, id} and get back {k, id, bitmap}.
+// A look is {ink: "r, g, b", paper: colour, leaf: 0 to 1}, set in style.css.
 
 const H = 600;
 const TW = 800;
@@ -109,7 +110,7 @@ let REC; // the item being drawn: its marks, recorded as paths around its own x,
 let IX = 0;
 let INK = "60,60,60";
 let PAPER = "#ffffff";
-let LEAF = 1; // trees are dark masses on paper; drawn in light ink on dark paper, they are toned down
+let LEAF = 1; // trees are dark masses; in light ink on dark paper they are toned down
 const ink = (a) => `rgba(${INK},${a.toFixed(3)})`;
 
 function poly(pts, fill, line, width) {
@@ -833,11 +834,11 @@ function plan(c) {
 
 const inked = new Map(); // recorded marks by theme and item, while the item is near
 
-function drawTile(ctx, k, scale, dark) {
+function drawTile(ctx, k, scale, look) {
   g = ctx;
-  INK = dark ? "214,214,214" : "48,48,48";
-  PAPER = dark ? "#181818" : "#ffffff";
-  LEAF = dark ? 0.6 : 1;
+  INK = look.ink;
+  PAPER = look.paper;
+  LEAF = look.leaf;
   const x0 = k * TW, x1 = x0 + TW;
   const lo = Math.floor((x0 - REACH) / CH), hi = Math.floor((x1 + REACH) / CH);
   for (const c of plans.keys()) if (c < lo - 8 || c > hi + 8) plans.delete(c);
@@ -848,7 +849,7 @@ function drawTile(ctx, k, scale, dark) {
   items.push({ k: "land", y: LAND, x: x0, x0, x1, s: hash(SEED, k, 3) });
   items.sort((a, b) => a.y - b.y || a.x - b.x);
   ctx.lineJoin = "round";
-  const theme = dark ? "d" : "l";
+  const theme = `${INK}|${PAPER}|${LEAF}|`;
   for (const it of items) {
     const key = it.k === "land" ? null : theme + it.s;
     let marks = key && inked.get(key)?.marks;
@@ -874,9 +875,9 @@ if (typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScop
     timer = 0;
     const job = queue.shift();
     if (job && job.id >= latest) {
-      const { k, s, dark, id } = job;
+      const { k, s, look, id } = job;
       const canvas = new OffscreenCanvas(Math.round(TW * s), Math.round(H * s));
-      drawTile(canvas.getContext("2d"), k, s, dark);
+      drawTile(canvas.getContext("2d"), k, s, look);
       const bitmap = canvas.transferToImageBitmap();
       self.postMessage({ k, id, bitmap }, [bitmap]);
     }

@@ -16,6 +16,13 @@
   const EPOCH = Date.UTC(2026, 0, 1);
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const dark = matchMedia("(prefers-color-scheme: dark)");
+  // The ink, paper and tree tone come from style.css, so the land matches the page
+  const read = () => {
+    const css = getComputedStyle(land);
+    const get = (name) => css.getPropertyValue(name).trim();
+    return { ink: get("--land-ink"), paper: get("--land-paper"), leaf: parseFloat(get("--land-leaf")) || 1 };
+  };
+  let look = read();
   // Two painters when the device has the cores for it, taking alternate tiles
   const workers = Array.from({ length: (navigator.hardwareConcurrency || 2) > 3 ? 2 : 1 }, () => new Worker("/ink.js"));
 
@@ -48,7 +55,7 @@
 
   function request(k) {
     pending.add(k);
-    workers[k % workers.length].postMessage({ k, s: px / TW, dark: dark.matches, id: pass });
+    workers[k % workers.length].postMessage({ k, s: px / TW, look, id: pass });
   }
 
   // Once the first view is in, or painting has failed, the intro goes on
@@ -155,6 +162,7 @@
   });
   still.addEventListener("change", run);
   dark.addEventListener("change", () => {
+    look = read();
     pass++;
     pending.clear();
     painted.clear();

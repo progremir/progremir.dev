@@ -5,7 +5,7 @@ Plain static site in `site/`. No build step.
 - `index.html`, `style.css`, `main.js`: the page
 - `land.js`, `ink.js`: the landscape in the hero
 - `404.html`: served for unknown paths
-- `fonts/geist.woff2`: Geist, subset to Latin and weights 400 to 600 (SIL OFL, see `fonts/OFL.txt`)
+- `fonts/eb-garamond.woff2`: EB Garamond, Latin, weights 400 to 500 (SIL OFL, see `fonts/OFL.txt`)
 - `og.png`, `favicon.svg`, `apple-touch-icon.png`: sharing image and icons
 
 ## The landscape
