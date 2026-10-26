@@ -23,6 +23,7 @@
   --sun: #e2643f;
   --moon: #ece4d3;
   --moon-dark: #2b2720;
+  --moon-line: transparent;
   --land-ink: 230, 222, 206;  /* the landscape's ink, paper and tree tone (land.js) */
   --land-paper: #1c1a16;
   --land-leaf: 0.6;
@@ -58,8 +59,10 @@
     --grad-from: #1c1915;
     --grad-to: #6b6255;
     --sun: #c4402b;
-    --moon: #8a8070;
+    --moon: #fbf8f1;            /* a paper-white moon, outlined in ink */
     --moon-dark: #e2d8c4;
+    --moon-line: rgb(44 40 34 / 0.45);
+    --moon-ring: rgb(44 40 34 / 0.45);
     --land-ink: 44, 40, 34;
     --land-paper: #faf6ee;
     --land-leaf: 1;
@@ -216,12 +219,14 @@ html:not(.js) .sky, .no-land .sky-stage { display: none; }
 .orb-disc svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .orb-dark { fill: none; }
 .orb.moon .orb-dark { fill: var(--moon-dark); }
+.orb.moon .orb-disc { border-radius: 50%; box-shadow: 0 0 0 1px var(--moon-line); }
 .orb-lit { fill: currentColor; }
 .orb-disc::after {
   content: ""; position: absolute; inset: 0;
   border: 1px solid currentColor; border-radius: 50%;
   opacity: 0;
 }
+.orb.moon .orb-disc::after { border-color: var(--moon-ring, currentColor); }
 .orb.paused .orb-disc::after { animation-play-state: paused; }
 
 .caption {
