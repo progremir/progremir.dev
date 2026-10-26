@@ -2,7 +2,9 @@
   "name": "progremir-dev",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "./site"
+    "directory": "./site",
+    // Serve site/404.html with a 404 status for unknown paths.
+    "not_found_handling": "404-page"
   },
   // Give each branch preview a workers.dev URL so Workers Builds can link it on PRs.
   "preview_urls": true,
